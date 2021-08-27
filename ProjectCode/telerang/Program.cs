@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace tele_rang
+namespace telerang
 {
     public static class Program
     {

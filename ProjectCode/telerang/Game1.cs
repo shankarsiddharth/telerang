@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 
-namespace tele_rang
+namespace telerang
 {
     public class Game1 : Game
     {
