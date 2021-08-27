@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace tele_rang
+namespace telerang
 {
     public class Game1 : Game
     {
