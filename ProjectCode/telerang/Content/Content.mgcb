@@ -26,6 +26,11 @@
 /processorParam:TextureFormat=Color
 /build:cursor_hand.png
 
+#begin Lvl 1.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Lvl 1.tmx
+
 #begin ninja.png
 /importer:TextureImporter
 /processor:TextureProcessor
