@@ -13,6 +13,8 @@ namespace telerang.Entities
 
         public int DrawOrder { get; set; }
 
+        public Vector2 targetPosition;
+
         private Vector2 _startPosition;
         private Texture2D _texture2D;
 
@@ -23,7 +25,7 @@ namespace telerang.Entities
 
             _texture2D = spriteSheet;
 
-            State = NinjaState.Idle;
+            State = NinjaState.Aiming;
 
             IsAlive = true;
         }
@@ -73,10 +75,29 @@ namespace telerang.Entities
             }
         }
 
+        public void ChangeState(NinjaState newNinjaState)
+        {
+            switch (State)
+            {
+                case NinjaState.Idle:
+                    { }
+                    break;
+                case NinjaState.Aiming:
+                    { }
+                    break;
+                case NinjaState.Teleporting:
+                    { }
+                    break;
+            }
+            State = newNinjaState;
+        }
+
         // event handler
         public void OnBoomerangReleased(object sender, TeleRangEventArgs e)
         {
+            ChangeState(NinjaState.Teleporting);
             Position = e.position;
+            ChangeState(NinjaState.Aiming);
         }
     }   
 }

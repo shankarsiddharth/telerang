@@ -16,14 +16,16 @@ namespace telerang
         private Texture2D _texture2D;
 
         private Ninja _ninja;
+        private float _maximumDistance;
 
-        public Boomerang(Texture2D spriteSheet, Vector2 position, Ninja ninja)
+        public Boomerang(Texture2D spriteSheet, Vector2 position, Ninja ninja, float maximumDistance)
         {
             Position = position;
             _startPosition = position;
 
             _texture2D = spriteSheet;
             _ninja = ninja;
+            _maximumDistance = maximumDistance;
         }
 
         public int DrawOrder { get; set; }
@@ -31,14 +33,53 @@ namespace telerang
         public void Update(GameTime gameTime)
         {
             MouseState mouseState = Mouse.GetState();
-            Position = new Vector2(mouseState.X, mouseState.Y);
+            Vector2 ninjaPosition = _ninja.Position;
+            Vector2 mousePosition = new Vector2(mouseState.X, mouseState.Y);
 
-            if (mouseState.LeftButton == ButtonState.Pressed)
+            switch (_ninja.State)
             {
-                TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
-                teleRangEventArgs.position = Position;
-                BoomerangReleased?.Invoke(this, teleRangEventArgs);
+                case NinjaState.Idle:
+                    { }
+                    break;
+                case NinjaState.Aiming:
+                    {
+                        if (mousePosition.Y <= ninjaPosition.Y)
+                        {
+                            mousePosition.Y = ninjaPosition.Y;
+                        }
+
+                        float maximumAllowedDistance = (ninjaPosition.Y + _maximumDistance);
+                        if (mousePosition.Y >= maximumAllowedDistance)
+                        {
+                            mousePosition.Y = maximumAllowedDistance;
+                        }
+
+                        Position = mousePosition;
+
+                        if (mouseState.LeftButton == ButtonState.Pressed)
+                        {
+                            _ninja.ChangeState(NinjaState.Teleporting);
+                            _ninja.Position = mousePosition;
+                            //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                            //teleRangEventArgs.position = Position;
+                            //BoomerangReleased?.Invoke(this, teleRangEventArgs);
+                        }
+                    }
+                    break;
+                case NinjaState.Teleporting:
+                    {
+                        _ninja.ChangeState(NinjaState.Teleported);
+                    }
+                    break;
+                case NinjaState.Teleported:
+                    {
+                        _ninja.ChangeState(NinjaState.Aiming);
+                    }
+                    break;
             }
+            
+
+            
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)

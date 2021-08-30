@@ -4,6 +4,7 @@
     {
         Idle,
         Aiming,
-        Teleporting
+        Teleporting,
+        Teleported
     }
 }
