@@ -41,7 +41,7 @@ namespace telerang
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _entityManager = new EntityManager();
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
