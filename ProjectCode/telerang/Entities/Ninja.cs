@@ -25,14 +25,14 @@ namespace telerang.Entities
 
             _texture2D = spriteSheet;
 
-            State = NinjaState.Aiming;
+            State = NinjaState.Idle;
 
             IsAlive = true;
         }
 
         public void Initialize()
         {
-            State = NinjaState.Aiming;
+            State = NinjaState.Idle;
             IsAlive = true;
             Position = new Vector2(_startPosition.X, _startPosition.Y);
         }
