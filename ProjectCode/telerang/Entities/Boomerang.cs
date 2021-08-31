@@ -189,5 +189,23 @@ namespace telerang
             }
             return true;
         }
+        
+        private bool IsObject(ushort x, ushort y)
+        {           
+            _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
+            if (_tile.HasValue)
+            {
+                TiledMapTile tile = (TiledMapTile)(_tile);
+                if (tile.IsBlank)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }   
+            }
+            return true;
+        }
     }
 }

@@ -80,13 +80,19 @@ namespace telerang.Entities
             switch (State)
             {
                 case NinjaState.Idle:
-                    { }
+                    { 
+
+                    }
                     break;
                 case NinjaState.Aiming:
-                    { }
+                    {
+
+                    }
                     break;
                 case NinjaState.Teleporting:
-                    { }
+                    {
+                        
+                    }
                     break;
             }
             State = newNinjaState;
