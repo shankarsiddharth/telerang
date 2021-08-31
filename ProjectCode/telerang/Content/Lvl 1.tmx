@@ -35,7 +35,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="5" name="Abyss" width="16" height="30">
+ <layer id="5" name="Abyss" width="16" height="30" locked="1">
   <properties>
    <property name="collision" type="bool" value="true"/>
   </properties>

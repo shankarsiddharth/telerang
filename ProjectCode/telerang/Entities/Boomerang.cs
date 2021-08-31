@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended.Tiled;
 using System;
 using telerang.Entities;
 
@@ -12,6 +13,9 @@ namespace telerang
 
         public Vector2 Position { get; set; }
         public float MaxTime { get; set; }
+        public int TileWidth;
+        public int TileHeight;
+
         private Vector2 _startPosition;
         private Texture2D _texture2D;
         private Texture2D _cursor;
@@ -19,16 +23,38 @@ namespace telerang
         private float _maximumDistance;
         private float _timer;
         private Vector2 _cursorPosition;
+        private TiledMap _tiledMap;
+        private TiledMapTileLayer _tiledMapPlatformLayer;
+        private TiledMapTile? _tile = null;
 
-        public Boomerang(Texture2D spriteSheet,Texture2D cursor, Vector2 position, Ninja ninja, float maximumDistance)
+        public Boomerang(Texture2D spriteSheet,Texture2D cursor, Vector2 position, Ninja ninja, float maximumDistance, TiledMap tiledMap)
         {
             Position = position;
-            _startPosition = position;
-            MaxTime = 500f;
+            _startPosition = position;           
             _texture2D = spriteSheet;
             _cursor = cursor;
             _ninja = ninja;
             _maximumDistance = maximumDistance;
+            _tiledMap = tiledMap;
+
+            _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
+            /*for (ushort i = 0; i < 30; i++)
+            {
+                for(ushort j = 0; j < 30; j++)
+                {
+                    _tiledMapPlatformLayer.TryGetTile(i, j, out _tile);                    
+                    if (_tile.HasValue)
+                    {
+                        TiledMapTile tile = (TiledMapTile)(_tile);
+                        //Console.WriteLine("X: " + i + " Y: " + j + "    " + tile.IsBlank);
+                        Console.WriteLine("X: " + i + " Y: " + j + "    true");
+                    }
+                    else
+                    {
+                        Console.WriteLine("X: " + i + " Y: " + j + "    false");
+                    }
+                }
+            }*/
         }
 
         public int DrawOrder { get; set; }
@@ -117,14 +143,22 @@ namespace telerang
                         _ninja.Position = Position;
                         if (mouseState.LeftButton == ButtonState.Released)
                         {
-                            _ninja.ChangeState(NinjaState.Idle);
+                            ushort x = (ushort)(Position.X / TileWidth);
+                            ushort y = (ushort)(Position.Y / TileHeight);
+                            if(IsAbyss(x,y))
+                            {
+                                Console.WriteLine("Dead");
+                                _ninja.ChangeState(NinjaState.Idle);
+                            }
+                            else
+                            {
+                                Console.WriteLine("Still Alive");
+                                _ninja.ChangeState(NinjaState.Idle);
+                            }
                         }
                     }
                     break;
             }
-            
-
-            
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -136,6 +170,24 @@ namespace telerang
             if (_ninja.State == NinjaState.Teleporting) {
                 spriteBatch.Draw(_texture2D, Position, Color.White);
             }
+        }
+
+        private bool IsAbyss(ushort x, ushort y)
+        {           
+            _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
+            if (_tile.HasValue)
+            {
+                TiledMapTile tile = (TiledMapTile)(_tile);
+                if (tile.IsBlank)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }   
+            }
+            return true;
         }
     }
 }

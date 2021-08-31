@@ -24,7 +24,11 @@ namespace telerang
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
 
-        private const float MAXIMUM_DISTANCE = 250.0f;
+        private const int TILE_WIDTH = 64;
+        private const int TILE_HEIGHT = 64;
+
+        private const float MAXIMUM_DISTANCE = 350.0f;
+        private const float TELEPORTING_MAX_TIME = 500.0f;
         
         //Private
         private GraphicsDeviceManager _graphics;
@@ -77,9 +81,12 @@ namespace telerang
             
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
             _boomerang = new Boomerang(_spriteSheetTexture,
-                Content.Load<Texture2D>(CURSOR_SPRITESHEET), Vector2.Zero, _ninja, MAXIMUM_DISTANCE)
+                Content.Load<Texture2D>(CURSOR_SPRITESHEET), Vector2.Zero, _ninja, MAXIMUM_DISTANCE, _tiledMap)
             {
-                DrawOrder = 101
+                DrawOrder = 101,
+                MaxTime = TELEPORTING_MAX_TIME,
+                TileWidth = TILE_WIDTH,
+                TileHeight = TILE_HEIGHT
             };
             _boomerang.BoomerangReleased += _ninja.OnBoomerangReleased;
 
