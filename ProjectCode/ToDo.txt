@@ -5,9 +5,10 @@ Boomerang
 Ninja
 Abyss
 
-Character Pivot
+Character Pivot [Bottom Centre]
+Boomerang Pivot [Centre]
 Curved Movement
-Moving Paltrforms
+Moving Plaltforms
 Collision Detection on Moving Platforms
 Level Loader
 
