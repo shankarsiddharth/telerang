@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-
+using MonoGame.Extended.Collisions;
+using MonoGame.Extended;
 namespace telerang.Entities
 {
     public class Ninja : IGameEntity
@@ -14,6 +15,7 @@ namespace telerang.Entities
         public int DrawOrder { get; set; }
 
         public Vector2 targetPosition;
+        public IShapeF Bounds { get; }
 
         private Vector2 _startPosition;
         private Texture2D _texture2D;
@@ -21,6 +23,7 @@ namespace telerang.Entities
         public Ninja(Texture2D spriteSheet, Vector2 position)
         {
             Position = position;
+            Bounds = new RectangleF(position,new Size2(32f,32f));
             _startPosition = Position;
 
             _texture2D = spriteSheet;
@@ -58,6 +61,7 @@ namespace telerang.Entities
             }
 
             spriteBatch.Draw(_texture2D, Position, Color.White);
+            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red, 3);
         }
 
         public void Update(GameTime gameTime)
@@ -96,6 +100,10 @@ namespace telerang.Entities
                     break;
             }
             State = newNinjaState;
+        }
+
+        public void OnCollision(CollisionEventArgs collisionInfo)
+        {
         }
 
         // event handler

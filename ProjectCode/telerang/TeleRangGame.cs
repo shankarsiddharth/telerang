@@ -7,6 +7,7 @@ using MonoGame.Extended.Tiled.Renderers;
 
 using MonoGame.Extended;
 using MonoGame.Extended.ViewportAdapters;
+using MonoGame.Extended.Collisions;
 using telerang.Entities;
 
 namespace telerang
@@ -42,13 +43,16 @@ namespace telerang
         private Boomerang _boomerang;
         
         private Texture2D _spriteSheetTexture;
-       
+
+        private readonly CollisionComponent _collisionComponent;
+
         public TeleRangGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _entityManager = new EntityManager();
             IsMouseVisible = false;
+            _collisionComponent = new CollisionComponent(new RectangleF(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
         }
 
         protected override void Initialize()
@@ -74,14 +78,14 @@ namespace telerang
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
 
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
-            _ninja = new Ninja(_spriteSheetTexture, Vector2.Zero)
+            _ninja = new Ninja(_spriteSheetTexture, new Vector2(WINDOW_WIDTH/2f,64f))
             {
                 DrawOrder = 100
             };
             
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
             _boomerang = new Boomerang(_spriteSheetTexture,
-                Content.Load<Texture2D>(CURSOR_SPRITESHEET), Vector2.Zero, _ninja, MAXIMUM_DISTANCE, _tiledMap)
+                Content.Load<Texture2D>(CURSOR_SPRITESHEET), new Vector2(WINDOW_WIDTH / 2f, 64f), _ninja, MAXIMUM_DISTANCE, _tiledMap)
             {
                 DrawOrder = 101,
                 MaxTime = TELEPORTING_MAX_TIME,
@@ -92,6 +96,8 @@ namespace telerang
 
             _entityManager.AddEntity(_ninja);
             _entityManager.AddEntity(_boomerang);
+            _collisionComponent.Insert(_boomerang);
+            _collisionComponent.Insert(_ninja);
         }
 
         protected override void Update(GameTime gameTime)
@@ -102,7 +108,7 @@ namespace telerang
             // TODO: Add your update logic here
             _tiledMapRenderer.Update(gameTime);
             _entityManager.Update(gameTime);
-            
+            _collisionComponent.Update(gameTime);
             base.Update(gameTime);
         }
 

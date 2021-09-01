@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended.Tiled;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using System;
 using telerang.Entities;
 
@@ -15,7 +17,9 @@ namespace telerang
         public float MaxTime { get; set; }
         public int TileWidth;
         public int TileHeight;
-
+        public IShapeF Bounds { get; }
+        private bool _canCollide = false;
+        private int _collideCount = 0;
         private Vector2 _startPosition;
         private Texture2D _texture2D;
         private Texture2D _cursor;
@@ -36,7 +40,7 @@ namespace telerang
             _ninja = ninja;
             _maximumDistance = maximumDistance;
             _tiledMap = tiledMap;
-
+            Bounds = new CircleF(position, 15f);
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
             /*for (ushort i = 0; i < 30; i++)
             {
@@ -102,6 +106,7 @@ namespace telerang
                             _ninja.targetPosition = mousePosition;
                             _startPosition = _ninja.Position;
                             _timer=0f;
+                            _collideCount = 0;
                             _ninja.ChangeState(NinjaState.Teleporting); 
                             //_ninja.Position = mousePosition;
                             //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
@@ -129,18 +134,21 @@ namespace telerang
                             _ninja.ChangeState(NinjaState.Idle);
                         }
                         else {
+                            if(_collideCount==0)_canCollide = true;
                             Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, (2f - _timer / MaxTime));
                             if (mouseState.LeftButton == ButtonState.Pressed)
                             {
                                 _ninja.ChangeState(NinjaState.Teleported);
                             }
                         }
+                        Bounds.Position = Position;
                         _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
                     }
                     break;
                 case NinjaState.Teleported:
                     {
                         _ninja.Position = Position;
+                        _ninja.Bounds.Position = Position;
                         if (mouseState.LeftButton == ButtonState.Released)
                         {
                             ushort x = (ushort)(Position.X / TileWidth);
@@ -169,6 +177,7 @@ namespace telerang
             }
             if (_ninja.State == NinjaState.Teleporting) {
                 spriteBatch.Draw(_texture2D, Position, Color.White);
+                spriteBatch.DrawCircle((CircleF)Bounds, 8, Color.Red, 3f);
             }
         }
 
@@ -206,6 +215,14 @@ namespace telerang
                 }   
             }
             return true;
+        }
+
+        public void OnCollision(CollisionEventArgs collisionInfo) {
+            if (_canCollide) {
+                _collideCount++;
+                Console.WriteLine(collisionInfo);
+                _canCollide = false;
+            }
         }
     }
 }
