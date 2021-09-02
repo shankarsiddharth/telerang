@@ -1,34 +1,37 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.VectorDraw;
 
 namespace telerang.Entities
 {
     public class Ninja : IGameEntity
     {
-        public NinjaState State { get; private set; }
+        public int DrawOrder { get; set; }
 
         public Vector2 Position { get; set; }
 
+        public Texture2D SpriteTexture { get; set; }
+
+        public IShapeF Bounds { get; private set; }
+
+        public NinjaState State { get; private set; }
+
         public bool IsAlive { get; private set; }
 
-        public int DrawOrder { get; set; }
+        public CollisionComponent CollisionComponentSimple { get; set; }
 
         public Vector2 targetPosition;
 
-        private Vector2 _startPosition;
-        private Texture2D _texture2D;
+        private Vector2 _startPosition;        
 
-        public Ninja(Texture2D spriteSheet, Vector2 position)
-        {
-            Position = position;
+        public Ninja()
+        {            
             _startPosition = Position;
-
-            _texture2D = spriteSheet;
-
             State = NinjaState.Idle;
-
-            IsAlive = true;
+            IsAlive = true; 
+            Bounds = new RectangleF(Position, new Size2(32f, 32f));
         }
 
         public void Initialize()
@@ -58,7 +61,7 @@ namespace telerang.Entities
             {
             }
 
-            spriteBatch.Draw(_texture2D, Position, Color.White);
+            spriteBatch.Draw(SpriteTexture, Position, Color.White);
         }
 
         public void Update(GameTime gameTime)
@@ -109,6 +112,11 @@ namespace telerang.Entities
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
         {
             //throw new System.NotImplementedException();
+        }
+
+        public void OnCollision(CollisionEventArgs collisionInfo)
+        {         
+            throw new System.NotImplementedException();
         }
     }
 }

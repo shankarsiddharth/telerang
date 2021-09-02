@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 using MonoGame.Extended.VectorDraw;
@@ -17,7 +19,7 @@ namespace telerang
 
         public const string GAME_TITLE = "TeleRang";
 
-        private const string TILEMAP_NAME = "Lvl 1";
+        private const string TILEMAP_NAME = "untitled";
         private const string NINJA_SPRITESHEET = "ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
@@ -41,11 +43,14 @@ namespace telerang
         private Matrix _localView;
 
         private EntityManager _entityManager;
+        private EntityFactory _entityFactory;
 
         private Ninja _ninja;
         private Boomerang _boomerang;
 
         private Texture2D _spriteSheetTexture;
+
+        private readonly CollisionComponent _collisionComponent;
 
         public TeleRangGame()
         {
@@ -53,6 +58,7 @@ namespace telerang
             Content.RootDirectory = "Content";
             _entityManager = new EntityManager();
             IsMouseVisible = false;
+            _collisionComponent = new CollisionComponent(new RectangleF(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
         }
 
         protected override void Initialize()
@@ -82,25 +88,35 @@ namespace telerang
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
 
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
-            _ninja = new Ninja(_spriteSheetTexture, Vector2.Zero)
+            _ninja = new Ninja()
             {
                 DrawOrder = 100,
+                SpriteTexture = _spriteSheetTexture,
+                Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT)
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
-            _boomerang = new Boomerang(_spriteSheetTexture,
-                Content.Load<Texture2D>(CURSOR_SPRITESHEET), Vector2.Zero, _ninja, MAXIMUM_DISTANCE, _tiledMap)
+            _boomerang = new Boomerang(Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap)
             {
                 DrawOrder = 101,
+                SpriteTexture = _spriteSheetTexture,
+                Position = _ninja.Position,
                 MaxTime = TELEPORTING_MAX_TIME,
                 TileWidth = TILE_WIDTH,
                 TileHeight = TILE_HEIGHT,
-                Speed = 0.1f
-            };
+                Speed = 1.0f,
+                CollisionComponentSimple = _collisionComponent
+        };
             _boomerang.BoomerangReleased += _ninja.OnBoomerangReleased;
+           
 
             _entityManager.AddEntity(_ninja);
             _entityManager.AddEntity(_boomerang);
+            _collisionComponent.Insert(_ninja);
+            _collisionComponent.Insert(_boomerang);
+
+            _entityFactory = new EntityFactory();
+            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, "Platform");
         }
 
         protected override void Update(GameTime gameTime)
@@ -111,6 +127,7 @@ namespace telerang
             // TODO: Add your update logic here
             _tiledMapRenderer.Update(gameTime);
             _entityManager.Update(gameTime);
+            //_collisionComponent.Update(gameTime);
 
             base.Update(gameTime);
         }

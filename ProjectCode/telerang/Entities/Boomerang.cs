@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Extended;
+using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.VectorDraw;
 
@@ -13,6 +15,8 @@ namespace telerang
 {
     internal class Boomerang : IGameEntity
     {
+        public Texture2D SpriteTexture { get; set; }
+
         public event EventHandler<TeleRangEventArgs> BoomerangReleased;
 
         public Vector2 Position { get; set; }
@@ -21,8 +25,9 @@ namespace telerang
         public int TileHeight;
         public float Speed;
 
+        public bool IsColliding { get; private set; }
+
         private Vector2 _startPosition;
-        private Texture2D _texture2D;
         private Texture2D _cursor;
         private Ninja _ninja;
         private float _maximumDistance;
@@ -37,20 +42,23 @@ namespace telerang
         private int _currentPathIndex = 0;
         private float _distanceTreshold = 0.01f;
 
-        public Boomerang(Texture2D spriteSheet, Texture2D cursor, Vector2 position, Ninja ninja, float maximumDistance, TiledMap tiledMap)
-        {
-            Position = position;
-            _startPosition = position;
-            _texture2D = spriteSheet;
+        public Boomerang(Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
+        {           
+            _startPosition = Position;           
             _cursor = cursor;
             _ninja = ninja;
             _maximumDistance = maximumDistance;
             _tiledMap = tiledMap;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
+            Bounds = new CircleF(Position, 15f);
         }
 
         public int DrawOrder { get; set; }
+
+        public IShapeF Bounds { get; private set; }
+
+        public CollisionComponent CollisionComponentSimple { get; set; }
 
         public void Update(GameTime gameTime)
         {
@@ -115,43 +123,9 @@ namespace telerang
 
                 case NinjaState.Teleporting:
                     {
-                        /*if (_timer <= MaxTime)
-                        {
-                            Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, _timer / MaxTime);
-                            if (mouseState.LeftButton == ButtonState.Pressed
-                                && _timer > 2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds)
-                            {
-                                _ninja.ChangeState(NinjaState.Teleported);
-                            }
-                        }
-                        else if (_timer >= 2 * MaxTime)
-                        {
-                            _ninja.Position = _startPosition;
-                            Position = _startPosition;
-                            _timer = 0f;
-                            _ninja.ChangeState(NinjaState.Idle);
-                        }
-                        else
-                        {
-                            Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, (2f - _timer / MaxTime));
-                            if (mouseState.LeftButton == ButtonState.Pressed)
-                            {
-                                _ninja.ChangeState(NinjaState.Teleported);
-                            }
-                        }
-                        _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;*/
-
-                    }
-                    {
-                        Vector2 currentPosition = _pathToTravel[_currentPathIndex];
-                        Vector2 nextPositionInPath = _pathToTravel[(_currentPathIndex + 1) % _pathToTravel.Length];
-                        Vector2 differceInPosition = ( nextPositionInPath - currentPosition);
-                        differceInPosition.Normalize();
-                        Position = differceInPosition * (float)deltaTime * Speed;
-                        if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
-                        {
-                            _currentPathIndex += 1;
-                        }
+                        MoveInLine(gameTime, mouseState);
+                        //MoveInCircle(deltaTime);
+                        CollisionComponentSimple.Update(gameTime);
                     }
                     break;
 
@@ -178,6 +152,49 @@ namespace telerang
             }
         }
 
+        private void MoveInLine(GameTime gameTime, MouseState mouseState)
+        {
+            if (_timer <= MaxTime)
+            {
+                Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, _timer / MaxTime);
+                if (mouseState.LeftButton == ButtonState.Pressed
+                    && _timer > 2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds)
+                {
+                    _ninja.ChangeState(NinjaState.Teleported);
+                }
+            }
+            else if (_timer >= 2 * MaxTime)
+            {
+                _ninja.Position = _startPosition;
+                Position = _startPosition;
+                _timer = 0f;
+                _ninja.ChangeState(NinjaState.Idle);
+            }
+            else
+            {
+                Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, (2f - _timer / MaxTime));
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    _ninja.ChangeState(NinjaState.Teleported);
+                }
+            }
+            Bounds.Position = Position;
+            _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+        }
+
+        private void MoveInCircle(double deltaTime)
+        {
+            Vector2 currentPosition = _pathToTravel[_currentPathIndex];
+            Vector2 nextPositionInPath = _pathToTravel[(_currentPathIndex + 1) % _pathToTravel.Length];
+            Vector2 differceInPosition = (nextPositionInPath - currentPosition);
+            differceInPosition.Normalize();
+            Position = differceInPosition * (float)deltaTime * Speed;
+            if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
+            {
+                _currentPathIndex += 1;
+            }
+        }
+
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
             switch (_ninja.State)
@@ -197,8 +214,9 @@ namespace telerang
                 case NinjaState.Teleporting:
                     {
                         spriteBatch.Draw(_cursor, Mouse.GetState().Position.ToVector2(), Color.White);
-                        spriteBatch.Draw(_texture2D, Position, Color.White);
+                        spriteBatch.Draw(SpriteTexture, Position, Color.White);
                         Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
+                        spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
                     break;
 
@@ -241,6 +259,11 @@ namespace telerang
 
         private bool IsAbyss(ushort x, ushort y)
         {
+            if (_tiledMapPlatformLayer == null)
+            {
+                return false;
+            }
+
             _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
             if (_tile.HasValue)
             {
@@ -262,6 +285,11 @@ namespace telerang
             //TiledMapObjectLayer _tiledMapObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Objects"); ;
             //TiledMapObject? _tile = null;
             //_tiledMapObjectLayer.Objects[0].Size
+
+            if (_tiledMapPlatformLayer == null)
+            {
+                return false;
+            }
 
             _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
             if (_tile.HasValue)
@@ -324,6 +352,12 @@ namespace telerang
             }
 
             return VectorList;
+        }
+
+        public void OnCollision(CollisionEventArgs collisionInfo)
+        {
+            //throw new NotImplementedException();
+            Console.WriteLine(collisionInfo.Other.GetType().Name);
         }
     }
 }

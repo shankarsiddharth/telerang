@@ -1,33 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="64" tileheight="64" infinite="0" nextlayerid="4" nextobjectid="2">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="16" height="16" tilewidth="64" tileheight="64" infinite="0" nextlayerid="7" nextobjectid="30">
  <tileset firstgid="1" source="tilesheet_complete.tsx"/>
- <layer id="1" name="BG" width="10" height="10">
+ <layer id="6" name="BG" width="16" height="16">
   <data encoding="csv">
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401,
-401,401,401,401,401,401,401,401,401,401
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,
+3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3
 </data>
  </layer>
- <layer id="3" name="Platform" width="10" height="10">
-  <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-93,93,93,93,93,93,93,93,93,93
-</data>
- </layer>
- <objectgroup id="2" name="Objects"/>
+ <objectgroup id="2" name="Platform" locked="1">
+  <object id="20" x="1" y="385" width="127" height="128"/>
+  <object id="21" x="511" y="385" width="128" height="126"/>
+  <object id="22" x="193" y="383" width="254" height="129"/>
+ </objectgroup>
+ <objectgroup id="4" name="Obstacle" locked="1">
+  <object id="8" x="194" y="192" width="253" height="131"/>
+  <object id="23" x="1" y="188" width="64" height="133"/>
+  <object id="24" x="576" y="191" width="63" height="130"/>
+ </objectgroup>
+ <objectgroup id="5" name="MovingPlatform" locked="1">
+  <object id="25" x="27" y="544" width="147" height="72"/>
+  <object id="28" x="217.5" y="544" width="147" height="72"/>
+  <object id="29" x="425" y="544" width="147" height="72"/>
+ </objectgroup>
 </map>
