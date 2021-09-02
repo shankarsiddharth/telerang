@@ -42,8 +42,12 @@ namespace telerang
         private int _currentPathIndex = 0;
         private float _distanceTreshold = 0.01f;
 
-        public Boomerang(Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
-        {           
+        private Vector2 _spritePosition;
+
+        public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
+        {
+            SpriteTexture = spriteTexture;
+            Position = initialPosition;
             _startPosition = Position;           
             _cursor = cursor;
             _ninja = ninja;
@@ -51,7 +55,11 @@ namespace telerang
             _tiledMap = tiledMap;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
-            Bounds = new CircleF(Position, 15f);
+            
+            float width = SpriteTexture.Width;
+            float height = SpriteTexture.Height;
+            float maxBound = (width >= height) ? width : height;
+            Bounds = new CircleF(new Vector2(Position.X - (width/2.0f), Position.Y - (height/2.0f)), maxBound);
         }
 
         public int DrawOrder { get; set; }
@@ -178,7 +186,10 @@ namespace telerang
                     _ninja.ChangeState(NinjaState.Teleported);
                 }
             }
-            Bounds.Position = Position;
+            float width = SpriteTexture.Width;
+            float height = SpriteTexture.Height;
+            Bounds.Position = new Vector2(Position.X + (width / 2.0f), Position.Y + (height / 2.0f));
+
             _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
@@ -214,7 +225,9 @@ namespace telerang
                 case NinjaState.Teleporting:
                     {
                         spriteBatch.Draw(_cursor, Mouse.GetState().Position.ToVector2(), Color.White);
-                        spriteBatch.Draw(SpriteTexture, Position, Color.White);
+
+                        _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2.0f), Position.Y - (SpriteTexture.Height / 2.0f));
+                        spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
                         Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
                         spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
