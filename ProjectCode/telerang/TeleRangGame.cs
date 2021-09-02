@@ -23,11 +23,12 @@ namespace telerang
         private const string NINJA_SPRITESHEET = "ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
+        private const string FLYING_CAR_SPRITESHEET = "flyingcar";
 
         private const string PLATFORM_LAYER_NAME = "Platform";
         private const string MOVING_PLATFORM_LAYER_NAME = "MovingPlatform";
         private const string OBSTACLES_LAYER_NAME = "Obstacle";
-
+        
         private const int TILE_WIDTH = 64;
         private const int TILE_HEIGHT = 64;
 
@@ -118,7 +119,8 @@ namespace telerang
             _entityFactory = new EntityFactory();
             _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME);
             _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
-            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME);
+            _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
+            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH);
         }
 
         protected override void Update(GameTime gameTime)

@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Tiled;
 using System;
@@ -74,8 +75,10 @@ namespace telerang.Entities
             ContentManager contentManager,
             CollisionComponent collisionComponent,
             EntityManager entityManager,
+            Texture2D spriteSheetTexture,
             string LEVEL_MAP_NAME,
             string MAP_LAYER_NAME,
+            float WindowWidth,
             int DefaultDrawOrder = 97
             )
         {
@@ -86,7 +89,7 @@ namespace telerang.Entities
             for (int i = 0; i < tiledMapObjectLayer.Objects.Length; i++)
             {
                 Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
-                MovingPlatform newMovingPlatform = new MovingPlatform(tiledMapObjectLayer.Objects[i])
+                MovingPlatform newMovingPlatform = new MovingPlatform(tiledMapObjectLayer.Objects[i], spriteSheetTexture, WindowWidth)
                 {
                     DrawOrder = DefaultDrawOrder,
                     CollisionComponentSimple = collisionComponent

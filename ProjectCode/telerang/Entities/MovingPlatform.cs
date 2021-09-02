@@ -16,7 +16,7 @@ namespace telerang.Entities
 
         public Vector2 Position { get; private set; }
 
-        public Texture2D SpriteTexture => throw new NotImplementedException();
+        public Texture2D SpriteTexture { get; set; }
 
         public IShapeF Bounds { get; private set; }
 
@@ -28,10 +28,18 @@ namespace telerang.Entities
 
         public string Direction { get; private set; }
 
-        public MovingPlatform(TiledMapObject mapObject)
+        public float _WindowWidth { get; set; }
+
+        private Vector2 _startPosition { get; set; }
+
+        public MovingPlatform(TiledMapObject mapObject, Texture2D spriteSheetTexture, float WindowWidth)
         {
             MapObject = mapObject;
+            SpriteTexture = spriteSheetTexture;
             Position = mapObject.Position;
+            _startPosition = Position;
+            _WindowWidth = WindowWidth;
+
             Bounds = new RectangleF(Position, mapObject.Size);
             Direction = MapObject.Properties.GetValueOrDefault<string, string>("direction");
             if(Direction == null || Direction.Length == 0)
@@ -42,7 +50,8 @@ namespace telerang.Entities
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            //spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
+            spriteBatch.Draw(SpriteTexture, Position, Color.White);
+            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
@@ -57,7 +66,14 @@ namespace telerang.Entities
 
         public void Update(GameTime gameTime)
         {
-            
+            Vector2 endPoint = new Vector2(Position.X + MapObject.Size.Width, Position.Y + MapObject.Size.Height);
+            //Position += new Vector2(-0.25f, 0);
+            Position += new Vector2(-2f, 0);
+            if (endPoint.X < 0)
+            {
+                Position = new Vector2(_startPosition.X + _WindowWidth, Position.Y);
+            }            
+            Bounds.Position = Position;
         }
     }
 }

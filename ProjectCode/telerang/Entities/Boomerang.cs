@@ -35,7 +35,8 @@ namespace telerang
         private Vector2 _cursorPosition;
         private TiledMap _tiledMap;
         private TiledMapTileLayer _tiledMapPlatformLayer;
-        private TiledMapObjectLayer _tiledMapObjectLayer;
+        private TiledMapObjectLayer _tiledMapPlatformObjectLayer;
+        private TiledMapObjectLayer _tiledMapFlyingCarObjectLayer;
         private TiledMapTile? _tile = null;
 
 
@@ -56,7 +57,8 @@ namespace telerang
             _tiledMap = tiledMap;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
-            _tiledMapObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
+            _tiledMapPlatformObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
+            _tiledMapFlyingCarObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("MovingPlatform");
 
             float width = SpriteTexture.Width;
             float height = SpriteTexture.Height;
@@ -298,24 +300,54 @@ namespace telerang
             */
             bool abyss = true;
 
-            TiledMapObject[] objects = _tiledMapObjectLayer.Objects;
-            for(int i = 0; i < objects.Length; i++)
+            List<TiledMapObject> objects = new List<TiledMapObject>();
+
+            TiledMapObject[] platformObjects = _tiledMapPlatformObjectLayer.Objects;
+            TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;
+
+            for (int i = 0; i < platformObjects.Length; i++)
             {
-                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);                
+                objects.Add(platformObjects[i]);
+            }
+            for (int i = 0; i < flyingCarObjects.Length; i++)
+            {
+                objects.Add(flyingCarObjects[i]);
+            }
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
+                if (boundingBox.Contains(Position))
+                {
+                    abyss = false;
+                    return abyss;
+                }
+            }
+            /*for (int i = 0; i < platformObjects.Length; i++)
+            {
+                RectangleF boundingBox = new RectangleF(platformObjects[i].Position, platformObjects[i].Size);                
                 if(boundingBox.Contains(Position))
                 {
                     abyss = false;
                     return abyss;
                 }
             }
+            for (int i = 0; i < flyingCarObjects.Length; i++)
+            {
+                RectangleF boundingBox = new RectangleF(flyingCarObjects[i].Position, flyingCarObjects[i].Size);
+                if (boundingBox.Contains(Position))
+                {
+                    abyss = false;
+                    return abyss;
+                }
+            }*/
             return abyss;
         }
 
         private bool IsObject(ushort x, ushort y)
         {
-            //TiledMapObjectLayer _tiledMapObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Objects"); ;
+            //TiledMapObjectLayer _tiledMapPlatformObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Objects"); ;
             //TiledMapObject? _tile = null;
-            //_tiledMapObjectLayer.Objects[0].Size
+            //_tiledMapPlatformObjectLayer.Objects[0].Size
 
             if (_tiledMapPlatformLayer == null)
             {
