@@ -17,7 +17,9 @@ namespace telerang
     {
         public Texture2D SpriteTexture { get; set; }
 
-        public event EventHandler<TeleRangEventArgs> BoomerangReleased;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
 
         public Vector2 Position { get; set; }
         public float MaxTime { get; set; }
@@ -128,7 +130,7 @@ namespace telerang
                             //_ninja.Position = mousePosition;
                             //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             //teleRangEventArgs.position = Position;
-                            //BoomerangReleased?.Invoke(this, teleRangEventArgs);
+                            //OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
                         }
                     }
                     break;
