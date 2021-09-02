@@ -61,6 +61,8 @@ namespace telerang
 
         private BoomerangTrail _boomerangTrail;
         private Texture2D _boomerangTrailTexture;
+
+        private VisualEntityManager _visualEntityManager;
         // === Particle end ===
          
 
@@ -69,6 +71,7 @@ namespace telerang
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _entityManager = new EntityManager();
+            _visualEntityManager = new VisualEntityManager();
             IsMouseVisible = false;
             _collisionComponent = new CollisionComponent(new RectangleF(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
         }
@@ -132,10 +135,15 @@ namespace telerang
             // === Particle ===
             _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
-            // === Particle end ===
-    }
+            _visualEntityManager.AddEntity(_boomerangTrail);
 
-    protected override void Update(GameTime gameTime)
+            _boomerang.BoomerangReleased += _boomerangTrail.OnBoomerangReleased;
+
+            // TODO: add visual entity factory for moving platform
+            // === Particle end ===
+        }
+
+        protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -146,7 +154,7 @@ namespace telerang
             //_collisionComponent.Update(gameTime);
 
             // === Particle ===
-            _boomerangTrail.Update(gameTime);
+            _visualEntityManager.Update(gameTime);
             // === Particle end ===
             base.Update(gameTime);
         }
@@ -161,7 +169,7 @@ namespace telerang
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
             // === Particle ===
-            _boomerangTrail.Draw(_spriteBatch, gameTime);
+            _visualEntityManager.Draw(_spriteBatch, gameTime);
             // === Particle end ===
             _spriteBatch.End();
 

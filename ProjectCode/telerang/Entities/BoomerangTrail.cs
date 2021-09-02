@@ -1,11 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.VectorDraw;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 
 using MonoGame.Extended.Particles;
 using MonoGame.Extended.Particles.Modifiers;
@@ -16,13 +18,22 @@ using MonoGame.Extended.TextureAtlases;
 
 namespace telerang.Entities
 {
-    class BoomerangTrail
+    class BoomerangTrail : IVisualEntity
     {
+        public Vector2 Position { get; set; }
+        public int DrawOrder { get; set; }
+
+        bool _enabled;
+
         private ParticleEffect _particleEffect;
         private Texture2D _particleTexture;
-
+        private TextureRegion2D textureRegion;
         private Boomerang _boomerang;
-        private Vector2 _position;
+        private Timer _disableTimer;
+
+        // Particle parameters //
+        private float _timeSpan = 0.5f;
+        // Particle parameters end //
 
         public BoomerangTrail(Texture2D trailParticleTexture2D, Boomerang boomerang = null)
         {
@@ -31,18 +42,59 @@ namespace telerang.Entities
                 throw new ArgumentNullException("Null Boomerang cannot be set for BoomerangTrail");
             }
             _boomerang = boomerang;
-            _position = _boomerang.Position;
+            Position = _boomerang.Position;
+            DrawOrder = 255;
 
             _particleTexture = trailParticleTexture2D;
             _particleTexture.SetData(new[] { Color.White });
+            textureRegion = new TextureRegion2D(_particleTexture);
+            _disableTimer = new Timer(_timeSpan);
+            _disableTimer.Stop();
+            _disableTimer.Elapsed += new ElapsedEventHandler(disableElapsed);
+            Disable();
+        }
+        public void Update(GameTime gameTime)
+        {
+            // Test
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {
+                Enable();
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                Disable();
+            }
+            // Test end
 
-            TextureRegion2D textureRegion = new TextureRegion2D(_particleTexture);  // Has to load content in Game.LoadContent()
+            if (_enabled)
+            {
+                Position = _boomerang.Position;
+                _particleEffect.Position = Position;
+                _particleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
+        {
+            if (_enabled)
+            {
+                spriteBatch.Draw(_particleEffect);
+            }
+        }
+
+        public void Enable()
+        {
+            if (_particleEffect != null && !_enabled)
+            {
+                _particleEffect.Dispose();
+            }
+
             _particleEffect = new ParticleEffect(autoTrigger: false)
             {
-                Position = _position,
+                Position = Position,
                 Emitters = new List<ParticleEmitter>
                 {
-                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(0.5),
+                    new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(_timeSpan),
                         Profile.Point())
                     {
                         Parameters = new ParticleReleaseParameters
@@ -72,17 +124,36 @@ namespace telerang.Entities
                     }
                 }
             };
-        }
-        public void Update(GameTime gameTime)
-        {
-            _position = _boomerang.Position;
-            _particleEffect.Position = _position;
-            _particleEffect.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            _enabled = true;
         }
 
-        public void Draw(SpriteBatch spriteBatch, GameTime gameTime)  // Remember use the particle sprite batch
+        public void Disable()
         {
-            spriteBatch.Draw(_particleEffect);
+            _disableTimer.Start();
+            _enabled = false;
+        }
+
+        void disableElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_particleEffect != null && !_enabled)
+            {
+                _particleEffect.Dispose();
+            }
+        }
+
+        public void OnBoomerangReleased(object sender, TeleRangEventArgs teleRangEventArgs)
+        {
+            Enable();
+        }
+
+        public void OnBoomerangCatched(object sender, TeleRangEventArgs teleRangEventArgs)
+        {
+            Disable();
+        }
+
+        public void OnBoomerangTeleported(object sender, TeleRangEventArgs teleRangEventArgs)
+        {
+            Disable();
         }
     }
 }
