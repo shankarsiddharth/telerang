@@ -18,7 +18,7 @@ namespace telerang.Entities
 
         public NinjaState State { get; private set; }
 
-        public bool IsAlive { get; private set; }
+        public bool IsAlive { get; set; }
 
         public CollisionComponent CollisionComponentSimple { get; set; }
 
@@ -70,7 +70,7 @@ namespace telerang.Entities
             _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
             spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
 
-            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
+            //spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void Update(GameTime gameTime)
@@ -92,6 +92,7 @@ namespace telerang.Entities
 
         public void ChangeState(NinjaState newNinjaState)
         {
+            State = newNinjaState;
             switch (State)
             {
                 case NinjaState.Idle:
@@ -108,8 +109,15 @@ namespace telerang.Entities
                     {
                     }
                     break;
-            }
-            State = newNinjaState;
+                case NinjaState.Teleported:
+                    {
+                        if(!IsAlive)
+                        {
+                            ReSpawn();
+                        }
+                    }
+                    break;
+            }            
         }
 
         // event handler
@@ -128,6 +136,12 @@ namespace telerang.Entities
         public void OnCollision(CollisionEventArgs collisionInfo)
         {         
             //throw new System.NotImplementedException();
+        }
+
+        public void ReSpawn()
+        {
+            Position = _startPosition;
+            IsAlive = true;
         }
     }
 }

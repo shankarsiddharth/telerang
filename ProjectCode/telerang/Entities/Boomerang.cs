@@ -35,6 +35,7 @@ namespace telerang
         private Vector2 _cursorPosition;
         private TiledMap _tiledMap;
         private TiledMapTileLayer _tiledMapPlatformLayer;
+        private TiledMapObjectLayer _tiledMapObjectLayer;
         private TiledMapTile? _tile = null;
 
 
@@ -55,7 +56,8 @@ namespace telerang
             _tiledMap = tiledMap;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
-            
+            _tiledMapObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
+
             float width = SpriteTexture.Width;
             float height = SpriteTexture.Height;
             float maxBound = (width >= height) ? width : height;
@@ -148,6 +150,7 @@ namespace telerang
                             {
                                 Console.WriteLine("Dead");
                                 _ninja.ChangeState(NinjaState.Idle);
+                                _ninja.ReSpawn();
                             }
                             else
                             {
@@ -228,8 +231,8 @@ namespace telerang
 
                         _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2.0f), Position.Y - (SpriteTexture.Height / 2.0f));
                         spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
-                        Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
-                        spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
+                        //Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
+                        //spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
                     break;
 
@@ -272,12 +275,13 @@ namespace telerang
 
         private bool IsAbyss(ushort x, ushort y)
         {
+            /*
             if (_tiledMapPlatformLayer == null)
             {
                 return false;
             }
-
-            _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
+            
+             _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
             if (_tile.HasValue)
             {
                 TiledMapTile tile = (TiledMapTile)(_tile);
@@ -291,6 +295,20 @@ namespace telerang
                 }
             }
             return true;
+            */
+            bool abyss = true;
+
+            TiledMapObject[] objects = _tiledMapObjectLayer.Objects;
+            for(int i = 0; i < objects.Length; i++)
+            {
+                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);                
+                if(boundingBox.Contains(Position))
+                {
+                    abyss = false;
+                    return abyss;
+                }
+            }
+            return abyss;
         }
 
         private bool IsObject(ushort x, ushort y)
@@ -371,6 +389,11 @@ namespace telerang
         {
             //throw new NotImplementedException();
             Console.WriteLine(collisionInfo.Other.GetType().Name);
+           /* if (collisionInfo.Other.GetType().Name != "Platform")
+            {
+                _ninja.IsAlive = false;
+                Position = _startPosition;                
+            }*/
         }
     }
 }

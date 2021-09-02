@@ -42,7 +42,7 @@ namespace telerang.Entities
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
+            //spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
