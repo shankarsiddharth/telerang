@@ -24,14 +24,20 @@ namespace telerang.Entities
 
         public Vector2 targetPosition;
 
-        private Vector2 _startPosition;        
+        private Vector2 _startPosition;
 
-        public Ninja()
-        {            
+        private Vector2 _spritePosition;
+
+        public Ninja(Texture2D spriteTexture, Vector2 initialPosition)
+        {
+            SpriteTexture = spriteTexture;
+            Position = initialPosition;
             _startPosition = Position;
             State = NinjaState.Idle;
-            IsAlive = true; 
-            Bounds = new RectangleF(Position, new Size2(32f, 32f));
+            IsAlive = true;
+
+            _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
+            Bounds = new RectangleF(_spritePosition, new Size2(SpriteTexture.Width, SpriteTexture.Height));
         }
 
         public void Initialize()
@@ -61,7 +67,10 @@ namespace telerang.Entities
             {
             }
 
-            spriteBatch.Draw(SpriteTexture, Position, Color.White);
+            _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
+            spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
+
+            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void Update(GameTime gameTime)
@@ -77,6 +86,8 @@ namespace telerang.Entities
                 case NinjaState.Aiming:
                     break;
             }
+            _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
+            Bounds.Position = _spritePosition;
         }
 
         public void ChangeState(NinjaState newNinjaState)
@@ -116,7 +127,7 @@ namespace telerang.Entities
 
         public void OnCollision(CollisionEventArgs collisionInfo)
         {         
-            throw new System.NotImplementedException();
+            //throw new System.NotImplementedException();
         }
     }
 }

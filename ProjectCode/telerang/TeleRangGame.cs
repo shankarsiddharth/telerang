@@ -24,10 +24,14 @@ namespace telerang
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
 
+        private const string PLATFORM_LAYER_NAME = "Platform";
+        private const string MOVING_PLATFORM_LAYER_NAME = "MovingPlatform";
+        private const string OBSTACLES_LAYER_NAME = "Obstacle";
+
         private const int TILE_WIDTH = 64;
         private const int TILE_HEIGHT = 64;
 
-        private const float MAXIMUM_DISTANCE = 350.0f;
+        private const float MAXIMUM_DISTANCE = 700.0f;
         private const float TELEPORTING_MAX_TIME = 500.0f;
 
         //Private
@@ -88,25 +92,21 @@ namespace telerang
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
 
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
-            _ninja = new Ninja()
+            _ninja = new Ninja(_spriteSheetTexture, new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT))
             {
-                DrawOrder = 100,
-                SpriteTexture = _spriteSheetTexture,
-                Position = new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT)
+                DrawOrder = 100
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
-            _boomerang = new Boomerang(Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap)
+            _boomerang = new Boomerang(_spriteSheetTexture, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap)
             {
-                DrawOrder = 101,
-                SpriteTexture = _spriteSheetTexture,
-                Position = _ninja.Position,
+                DrawOrder = 101,  
                 MaxTime = TELEPORTING_MAX_TIME,
                 TileWidth = TILE_WIDTH,
                 TileHeight = TILE_HEIGHT,
                 Speed = 1.0f,
                 CollisionComponentSimple = _collisionComponent
-        };
+            };
             _boomerang.BoomerangReleased += _ninja.OnBoomerangReleased;
            
 
@@ -116,7 +116,9 @@ namespace telerang
             _collisionComponent.Insert(_boomerang);
 
             _entityFactory = new EntityFactory();
-            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, "Platform");
+            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME);
+            _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
+            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME);
         }
 
         protected override void Update(GameTime gameTime)
