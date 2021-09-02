@@ -17,7 +17,9 @@ namespace telerang
     {
         public Texture2D SpriteTexture { get; set; }
 
-        public event EventHandler<TeleRangEventArgs> BoomerangReleased;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
 
         public Vector2 Position { get; set; }
         public float MaxTime { get; set; }
@@ -83,6 +85,13 @@ namespace telerang
             {
                 case NinjaState.Idle:
                     {
+
+                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
+                        if (CurrentMovingPlatform != null)
+                        {
+                            _ninja.Position += new Vector2(-2f, 0);
+                        }
+
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
                             _ninja.ChangeState(NinjaState.Aiming);
@@ -92,6 +101,13 @@ namespace telerang
 
                 case NinjaState.Aiming:
                     {
+
+                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
+                        if (CurrentMovingPlatform != null)
+                        {
+                            _ninja.Position += new Vector2(-2f, 0);
+                        }
+
                         if (mousePosition.Y <= ninjaPosition.Y)
                         {
                             mousePosition.Y = ninjaPosition.Y;
@@ -128,7 +144,7 @@ namespace telerang
                             //_ninja.Position = mousePosition;
                             //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             //teleRangEventArgs.position = Position;
-                            //BoomerangReleased?.Invoke(this, teleRangEventArgs);
+                            //OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
                         }
                     }
                     break;
@@ -159,6 +175,12 @@ namespace telerang
                                 Console.WriteLine("Still Alive");
                                 _ninja.ChangeState(NinjaState.Idle);
                             }
+                        }
+
+                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
+                        if (CurrentMovingPlatform != null)
+                        {
+                            _ninja.Position += new Vector2(-2f, 0);
                         }
                     }
                     break;
@@ -276,28 +298,7 @@ namespace telerang
         }
 
         private bool IsAbyss(ushort x, ushort y)
-        {
-            /*
-            if (_tiledMapPlatformLayer == null)
-            {
-                return false;
-            }
-            
-             _tiledMapPlatformLayer.TryGetTile(x, y, out _tile);
-            if (_tile.HasValue)
-            {
-                TiledMapTile tile = (TiledMapTile)(_tile);
-                if (tile.IsBlank)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            return true;
-            */
+        {            
             bool abyss = true;
 
             List<TiledMapObject> objects = new List<TiledMapObject>();
@@ -322,25 +323,27 @@ namespace telerang
                     return abyss;
                 }
             }
-            /*for (int i = 0; i < platformObjects.Length; i++)
-            {
-                RectangleF boundingBox = new RectangleF(platformObjects[i].Position, platformObjects[i].Size);                
-                if(boundingBox.Contains(Position))
-                {
-                    abyss = false;
-                    return abyss;
-                }
-            }
+            return abyss;
+        }
+
+        private TiledMapObject GetCurrentMovingPlatform()
+        {
+            TiledMapObject movingPlatform = null;
+            List<TiledMapObject> objects = new List<TiledMapObject>();           
+            TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;                        
             for (int i = 0; i < flyingCarObjects.Length; i++)
             {
-                RectangleF boundingBox = new RectangleF(flyingCarObjects[i].Position, flyingCarObjects[i].Size);
+                objects.Add(flyingCarObjects[i]);
+            }
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
                 if (boundingBox.Contains(Position))
                 {
-                    abyss = false;
-                    return abyss;
+                    return objects[i];
                 }
-            }*/
-            return abyss;
+            }
+            return movingPlatform;
         }
 
         private bool IsObject(ushort x, ushort y)

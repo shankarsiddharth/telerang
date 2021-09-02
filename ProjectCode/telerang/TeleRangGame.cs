@@ -118,7 +118,7 @@ namespace telerang
                 Speed = 1.0f,
                 CollisionComponentSimple = _collisionComponent
             };
-            _boomerang.BoomerangReleased += _ninja.OnBoomerangReleased;
+            _boomerang.OnBoomerangRelease += _ninja.OnBoomerangReleased;
            
 
             _entityManager.AddEntity(_ninja);
