@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.VectorDraw;
 
 namespace telerang.Entities
 {
@@ -80,18 +81,17 @@ namespace telerang.Entities
             switch (State)
             {
                 case NinjaState.Idle:
-                    { 
-
+                    {
                     }
                     break;
+
                 case NinjaState.Aiming:
                     {
-
                     }
                     break;
+
                 case NinjaState.Teleporting:
                     {
-                        
                     }
                     break;
             }
@@ -105,5 +105,10 @@ namespace telerang.Entities
             Position = e.position;
             ChangeState(NinjaState.Aiming);
         }
-    }   
+
+        public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
+        {
+            //throw new System.NotImplementedException();
+        }
+    }
 }

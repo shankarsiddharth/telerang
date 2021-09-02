@@ -1,12 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
-
-using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
+using MonoGame.Extended.VectorDraw;
 using telerang.Entities;
 
 namespace telerang
@@ -15,8 +12,9 @@ namespace telerang
     {
         //Public
         public const int WINDOW_WIDTH = 1024;
-        public const int WINDOW_HEIGHT = 1920;
-        
+
+        public const int WINDOW_HEIGHT = 1024;
+
         public const string GAME_TITLE = "TeleRang";
 
         private const string TILEMAP_NAME = "Lvl 1";
@@ -29,20 +27,26 @@ namespace telerang
 
         private const float MAXIMUM_DISTANCE = 350.0f;
         private const float TELEPORTING_MAX_TIME = 500.0f;
-        
+
         //Private
         private GraphicsDeviceManager _graphics;
+
         private SpriteBatch _spriteBatch;
         private TiledMap _tiledMap;
         private TiledMapRenderer _tiledMapRenderer;
-        
+
+        private PrimitiveDrawing _primitiveDrawing;
+        private PrimitiveBatch _primitiveBatch;
+        private Matrix _localProjection;
+        private Matrix _localView;
+
         private EntityManager _entityManager;
 
         private Ninja _ninja;
         private Boomerang _boomerang;
-        
+
         private Texture2D _spriteSheetTexture;
-       
+
         public TeleRangGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -55,13 +59,12 @@ namespace telerang
         {
             // TODO: Add your initialization logic here
             Window.Title = GAME_TITLE;
-            
+
             _graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
             _graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
             _graphics.SynchronizeWithVerticalRetrace = true;
             _graphics.ApplyChanges();
-            
-            
+
             base.Initialize();
         }
 
@@ -69,16 +72,21 @@ namespace telerang
         {
             // TODO: use this.Content to load your game content here
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            
+
+            _primitiveBatch = new PrimitiveBatch(GraphicsDevice);
+            _primitiveDrawing = new PrimitiveDrawing(_primitiveBatch);
+            _localProjection = Matrix.CreateOrthographicOffCenter(0f, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height, 0f, 0f, 1f);
+            _localView = Matrix.Identity;
+
             _tiledMap = Content.Load<TiledMap>(TILEMAP_NAME);
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
 
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
             _ninja = new Ninja(_spriteSheetTexture, Vector2.Zero)
             {
-                DrawOrder = 100
+                DrawOrder = 100,
             };
-            
+
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
             _boomerang = new Boomerang(_spriteSheetTexture,
                 Content.Load<Texture2D>(CURSOR_SPRITESHEET), Vector2.Zero, _ninja, MAXIMUM_DISTANCE, _tiledMap)
@@ -86,7 +94,8 @@ namespace telerang
                 DrawOrder = 101,
                 MaxTime = TELEPORTING_MAX_TIME,
                 TileWidth = TILE_WIDTH,
-                TileHeight = TILE_HEIGHT
+                TileHeight = TILE_HEIGHT,
+                Speed = 0.1f
             };
             _boomerang.BoomerangReleased += _ninja.OnBoomerangReleased;
 
@@ -102,7 +111,7 @@ namespace telerang
             // TODO: Add your update logic here
             _tiledMapRenderer.Update(gameTime);
             _entityManager.Update(gameTime);
-            
+
             base.Update(gameTime);
         }
 
@@ -112,10 +121,14 @@ namespace telerang
 
             // TODO: Add your drawing code here
             _tiledMapRenderer.Draw();
-            
+
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
+
+            _primitiveBatch.Begin(ref _localProjection, ref _localView);
+            _entityManager.DrawPrimitives(_primitiveDrawing, gameTime);
+            _primitiveBatch.End();
 
             base.Draw(gameTime);
         }

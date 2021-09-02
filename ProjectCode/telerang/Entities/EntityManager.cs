@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.VectorDraw;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -45,6 +46,14 @@ namespace telerang.Entities
             foreach (IGameEntity entity in _entities.OrderBy(e => e.DrawOrder))
             {
                 entity.Draw(spriteBatch, gameTime);
+            }
+        }
+
+        public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
+        {
+            foreach (IGameEntity entity in _entities.OrderBy(e => e.DrawOrder))
+            {
+                entity.DrawPrimitives(primitiveDrawing, gameTime);
             }
         }
 

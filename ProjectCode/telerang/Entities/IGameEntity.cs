@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Extended.VectorDraw;
 
 namespace telerang.Entities
 {
@@ -10,5 +11,7 @@ namespace telerang.Entities
         void Update(GameTime gameTime);
 
         void Draw(SpriteBatch spriteBatch, GameTime gameTime);
+
+        void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime);
     }
 }
