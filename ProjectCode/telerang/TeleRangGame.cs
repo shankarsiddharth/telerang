@@ -57,6 +57,13 @@ namespace telerang
 
         private readonly CollisionComponent _collisionComponent;
 
+        // === Particle ===
+
+        private BoomerangTrail _boomerangTrail;
+        private Texture2D _boomerangTrailTexture;
+        // === Particle end ===
+         
+
         public TeleRangGame()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -121,9 +128,14 @@ namespace telerang
             _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
             _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH);
-        }
+        
+            // === Particle ===
+            _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
+            // === Particle end ===
+    }
 
-        protected override void Update(GameTime gameTime)
+    protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
@@ -133,6 +145,9 @@ namespace telerang
             _entityManager.Update(gameTime);
             //_collisionComponent.Update(gameTime);
 
+            // === Particle ===
+            _boomerangTrail.Update(gameTime);
+            // === Particle end ===
             base.Update(gameTime);
         }
 
@@ -145,11 +160,16 @@ namespace telerang
 
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
+            // === Particle ===
+            _boomerangTrail.Draw(_spriteBatch, gameTime);
+            // === Particle end ===
             _spriteBatch.End();
 
             _primitiveBatch.Begin(ref _localProjection, ref _localView);
             _entityManager.DrawPrimitives(_primitiveDrawing, gameTime);
             _primitiveBatch.End();
+
+
 
             base.Draw(gameTime);
         }
