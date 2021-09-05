@@ -1,0 +1,18 @@
+{
+  "textureAtlas": {
+    "texture": "Ninja.png",
+    "regionWidth": 64,
+    "regionHeight": 64
+  },
+  "cycles": {
+    "left_walk": {
+      "frames": [4,3,5,3]
+    },
+    "righ_walk": {
+      "frames": [10,11,10,12]
+    },
+    "teleport": {
+      "frames": [7,8,9]
+    }
+  }
+}
