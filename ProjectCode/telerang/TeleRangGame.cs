@@ -115,9 +115,7 @@ namespace telerang
                 CollisionComponentSimple = _collisionComponent,
                 WindowWidth = WINDOW_WIDTH
             };
-            _boomerang.OnBoomerangRelease += _ninja.OnBoomerangReleased;
-            _boomerang.OnBoomerangTeleport += _ninja.OnBoomerangTeleport;
-            _boomerang.OnBoomerangCatch += _ninja.OnBoomerangCatch;
+
 
 
             _entityManager.AddEntity(_ninja);
