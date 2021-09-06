@@ -116,7 +116,7 @@ namespace telerang
                 WindowWidth = WINDOW_WIDTH
             };
 
-
+            //_boomerang.OnBoomerangRelease += _ninja.OnBoomerangReleased;
 
             _entityManager.AddEntity(_ninja);
             _entityManager.AddEntity(_boomerang);

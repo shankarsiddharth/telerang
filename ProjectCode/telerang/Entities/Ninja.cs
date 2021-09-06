@@ -87,20 +87,18 @@ namespace telerang.Entities
 
         public void Update(GameTime gameTime)
         {
-            switch (State)
-            {
-                case NinjaState.Idle:
-                    break;
 
-                case NinjaState.Teleporting:
-                    break;
-
-                case NinjaState.Aiming:
-                    break;
-            }
             _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
             Bounds.Position = _spritePosition;
-            sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+            
+            switch (State)
+            {
+                case NinjaState.Teleported: 
+                    sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);break;
+                
+                default: 
+                    sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);break;
+            }
         }
 
         public void ChangeState(NinjaState newNinjaState)
@@ -110,11 +108,13 @@ namespace telerang.Entities
             {
                 case NinjaState.Idle:
                     {
+                        PlayAnim("idle", true);
                     }
                     break;
 
                 case NinjaState.Aiming:
                     {
+                        PlayAnim("aiming", true);
                     }
                     break;
 
@@ -123,11 +123,11 @@ namespace telerang.Entities
                     }
                     break;
                 case NinjaState.Teleported:
-                    {
-                        if(!IsAlive)
                         {
-                            ReSpawn();
-                        }
+                            if (!IsAlive)
+                            {
+                                ReSpawn();
+                            }
                     }
                     break;
             }            
@@ -136,9 +136,8 @@ namespace telerang.Entities
         // event handler
         public void OnBoomerangReleased(object sender, TeleRangEventArgs e)
         {
-            ChangeState(NinjaState.Teleporting);
-            Position = e.position;
-            ChangeState(NinjaState.Aiming);
+            int a = 0;
+            a = a + 1;
         }
 
         public void OnBoomerangTeleport(object sender, TeleRangEventArgs e)

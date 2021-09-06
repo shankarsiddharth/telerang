@@ -174,33 +174,8 @@ namespace telerang
 
                 case NinjaState.Teleported:
                     {
-                        _ninja.Position = Position;
-                        if (mouseState.LeftButton == ButtonState.Released)
-                        {
-                            ushort x = (ushort)(Position.X / TileWidth);
-                            ushort y = (ushort)(Position.Y / TileHeight);
-                            if (IsAbyss(x, y))
-                            {
-                                Console.WriteLine("Dead");
-                                _ninja.ChangeState(NinjaState.Idle);
-                                _ninja.ReSpawn();
-                            }
-                            else
-                            {
-                                Console.WriteLine("Still Alive");
-                                _ninja.ChangeState(NinjaState.Idle);
-                            }
-                        }
 
-                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                        if (CurrentMovingPlatform != null)
-                        {
-                            _ninja.Position += new Vector2(-2f, 0);
-                        }
 
-                        TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
-                        teleRangEventArgs.position = Position;
-                        OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
                     }
                     break;
             }
@@ -215,6 +190,7 @@ namespace telerang
                     && _timer > 2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds)
                 {
                     _ninja.ChangeState(NinjaState.Teleported);
+                    TeleportNinja();
                 }
             }
             else if (_timer >= 2 * MaxTime)
@@ -235,6 +211,7 @@ namespace telerang
                 if (mouseState.LeftButton == ButtonState.Pressed)
                 {
                     _ninja.ChangeState(NinjaState.Teleported);
+                    TeleportNinja();
                 }
             }
             float width = SpriteTexture.Width;
@@ -291,6 +268,35 @@ namespace telerang
                     }
                     break;
             }
+        }
+        public void TeleportNinja() {
+            _ninja.sprite.Play("teleportStart", () => {
+                _ninja.Position = Position;
+                ushort x = (ushort)(Position.X / TileWidth);
+                ushort y = (ushort)(Position.Y / TileHeight);
+                if (IsAbyss(x, y))
+                {
+                    Console.WriteLine("Dead");
+                    _ninja.sprite.Play("fall", () =>
+                    {
+                        _ninja.ChangeState(NinjaState.Idle);
+                        _ninja.ReSpawn();
+                    });
+                }
+                else _ninja.sprite.Play("teleportEnd", () => {
+                    Console.WriteLine("Still Alive");
+                    _ninja.ChangeState(NinjaState.Idle);
+                    TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
+                    if (CurrentMovingPlatform != null)
+                    {
+                        _ninja.Position += new Vector2(-2f, 0);
+                    }
+
+                    TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                    teleRangEventArgs.position = Position;
+                    OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
+                });
+            });
         }
 
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
