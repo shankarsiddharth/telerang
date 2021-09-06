@@ -270,10 +270,14 @@ namespace telerang
             }
         }
         public void TeleportNinja() {
+            TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+            teleRangEventArgs.position = Position;
+            OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
             _ninja.sprite.Play("teleportStart", () => {
                 _ninja.Position = Position;
                 ushort x = (ushort)(Position.X / TileWidth);
                 ushort y = (ushort)(Position.Y / TileHeight);
+
                 if (IsAbyss(x, y))
                 {
                     Console.WriteLine("Dead");
@@ -292,9 +296,7 @@ namespace telerang
                         _ninja.Position += new Vector2(-2f, 0);
                     }
 
-                    TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
-                    teleRangEventArgs.position = Position;
-                    OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
+
                 });
             });
         }

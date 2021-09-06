@@ -94,7 +94,7 @@ namespace telerang.Entities
             switch (State)
             {
                 case NinjaState.Teleported: 
-                    sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);break;
+                    sprite.Update(2*(float)gameTime.ElapsedGameTime.TotalSeconds);break;
                 
                 default: 
                     sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);break;
