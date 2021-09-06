@@ -5,14 +5,17 @@
     "regionHeight": 64
   },
   "cycles": {
-    "left_walk": {
-      "frames": [4,3,5,3]
+    "idle": {
+      "frames": [2]
     },
-    "righ_walk": {
-      "frames": [10,11,10,12]
+    "fall": {
+      "frames": [2,1,2]
+    },
+    "aiming": {
+      "frames": [0]
     },
     "teleport": {
-      "frames": [7,8,9]
+      "frames": [7,8,9,10,11,12,13]
     }
   }
 }
