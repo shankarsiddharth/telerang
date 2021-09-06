@@ -112,10 +112,13 @@ namespace telerang
                 TileWidth = TILE_WIDTH,
                 TileHeight = TILE_HEIGHT,
                 Speed = 1.0f,
-                CollisionComponentSimple = _collisionComponent
+                CollisionComponentSimple = _collisionComponent,
+                WindowWidth = WINDOW_WIDTH
             };
             _boomerang.OnBoomerangRelease += _ninja.OnBoomerangReleased;
-           
+            _boomerang.OnBoomerangTeleport += _ninja.OnBoomerangTeleport;
+            _boomerang.OnBoomerangCatch += _ninja.OnBoomerangCatch;
+
 
             _entityManager.AddEntity(_ninja);
             _entityManager.AddEntity(_boomerang);

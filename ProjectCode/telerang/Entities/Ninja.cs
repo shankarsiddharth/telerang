@@ -134,6 +134,17 @@ namespace telerang.Entities
             ChangeState(NinjaState.Aiming);
         }
 
+        public void OnBoomerangTeleport(object sender, TeleRangEventArgs e)
+        {
+            int a = 0;
+            a = a + 1;
+        }
+        public void OnBoomerangCatch(object sender, TeleRangEventArgs e)
+        {
+            int a = 0;
+            a = a + 1;
+        }
+
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
         {
             //throw new System.NotImplementedException();
