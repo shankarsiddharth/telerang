@@ -26,6 +26,7 @@ namespace telerang
         public int TileWidth;
         public int TileHeight;
         public float Speed;
+        public int WindowWidth;
 
         public bool IsColliding { get; private set; }
 
@@ -138,13 +139,27 @@ namespace telerang
 
                             float distance = Vector2.Distance(_ninja.Position, _cursorPosition);
                             Vector2 midpoint = (_ninja.Position + _cursorPosition) / 2.0f;
-                            _pathToTravel = CreateCircle(midpoint, distance / 2.0f);
+                           
+                            /* _pathToTravel = CreateCircle(midpoint, distance / 2.0f);
                             _currentPathIndex = 0;
-                            _ninja.ChangeState(NinjaState.Teleporting);
+                            _ninja.ChangeState(NinjaState.Teleporting);*/
+
                             //_ninja.Position = mousePosition;
                             //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             //teleRangEventArgs.position = Position;
                             //OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
+
+                            Vector2 A = (new Vector2(WindowWidth, 0)) - _ninja.Position;
+                            Vector2 B = _cursorPosition - _ninja.Position;
+                            double angle = GetAngle(B, A);
+                            float ry = distance / 2.0f;
+                            float rx = ry / 2.0f;
+                            _pathToTravel = CreateEllipse(rx, ry, (int)midpoint.X, (int)midpoint.Y, 64, (float)angle);
+                            _currentPathIndex = 0;
+                            TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                            teleRangEventArgs.position = Position;
+                            OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
+                            _ninja.ChangeState(NinjaState.Teleporting);
                         }
                     }
                     break;
@@ -182,6 +197,10 @@ namespace telerang
                         {
                             _ninja.Position += new Vector2(-2f, 0);
                         }
+
+                        TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                        teleRangEventArgs.position = Position;
+                        OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
                     }
                     break;
             }
@@ -203,6 +222,11 @@ namespace telerang
                 _ninja.Position = _startPosition;
                 Position = _startPosition;
                 _timer = 0f;
+
+                TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                teleRangEventArgs.position = Position;
+                OnBoomerangCatch?.Invoke(this, teleRangEventArgs);
+
                 _ninja.ChangeState(NinjaState.Idle);
             }
             else
@@ -246,6 +270,7 @@ namespace telerang
                 case NinjaState.Aiming:
                     {
                         spriteBatch.Draw(_cursor, _cursorPosition, Color.White);
+                        //Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
                     }
                     break;
 
@@ -373,17 +398,21 @@ namespace telerang
             return true;
         }
 
-        public static Vector2[] CreateEllipse(float rx, float ry, int sides)
+        public static Vector2[] CreateEllipse(float rx, float ry, int h, int k, int sides, float theta)
         {
             var vertices = new Vector2[sides];
 
             var t = 0.0;
             var dt = 2.0 * Math.PI / sides;
+            float angle = MathHelper.ToRadians(theta);
+
             for (var i = 0; i < sides; i++, t += dt)
             {
-                var x = (float)(rx * Math.Cos(t));
-                var y = (float)(ry * Math.Sin(t));
-                vertices[i] = new Vector2(x, y);
+                var x = h + (float)(rx * Math.Cos(t));
+                var y = k + (float)(ry * Math.Sin(t));
+                Vector2 position = new Vector2(x, y);
+                position = Vector2.Transform(position, Matrix.CreateFromAxisAngle(new Vector3(rx,ry,0), angle));
+                vertices[i] = position;
             }
             return vertices;
         }
@@ -429,6 +458,12 @@ namespace telerang
                 _ninja.IsAlive = false;
                 Position = _startPosition;                
             }*/
+        }
+
+
+        private double GetAngle(Vector2 VectorA, Vector2 VectorB)
+        {            
+            return Math.Atan2(VectorB.Y - VectorA.Y, VectorB.X - VectorB.Y);
         }
     }
 }

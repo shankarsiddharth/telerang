@@ -1,0 +1,21 @@
+{
+  "textureAtlas": {
+    "texture": "Ninja.png",
+    "regionWidth": 64,
+    "regionHeight": 64
+  },
+  "cycles": {
+    "idle": {
+      "frames": [2]
+    },
+    "fall": {
+      "frames": [2,1,2]
+    },
+    "aiming": {
+      "frames": [0]
+    },
+    "teleport": {
+      "frames": [7,8,9,10,11,12,13]
+    }
+  }
+}
