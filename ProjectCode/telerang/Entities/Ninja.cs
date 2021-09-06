@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGame.Extended;
 using MonoGame.Extended.Collisions;
 using MonoGame.Extended.VectorDraw;
+using MonoGame.Extended.Sprites;
 
 namespace telerang.Entities
 {
@@ -13,6 +14,8 @@ namespace telerang.Entities
         public Vector2 Position { get; set; }
 
         public Texture2D SpriteTexture { get; set; }
+
+        public AnimatedSprite sprite { get; set; }
 
         public IShapeF Bounds { get; private set; }
 
@@ -28,9 +31,11 @@ namespace telerang.Entities
 
         private Vector2 _spritePosition;
 
-        public Ninja(Texture2D spriteTexture, Vector2 initialPosition)
+        public Ninja(SpriteSheet spriteSheet,Texture2D spriteTexture, Vector2 initialPosition)
         {
+            sprite = new AnimatedSprite(spriteSheet);
             SpriteTexture = spriteTexture;
+            sprite.Play("idle");
             Position = initialPosition;
             _startPosition = Position;
             State = NinjaState.Idle;
@@ -67,10 +72,10 @@ namespace telerang.Entities
             {
             }
 
-            _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
-            spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
+            _spritePosition = new Vector2(Position.X /*- (SpriteTexture.Width / 2)*/, Position.Y - (SpriteTexture.Height / 2));
+            spriteBatch.Draw(sprite, _spritePosition);
 
-            //spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
+            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void Update(GameTime gameTime)
@@ -88,6 +93,7 @@ namespace telerang.Entities
             }
             _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
             Bounds.Position = _spritePosition;
+            sprite.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         public void ChangeState(NinjaState newNinjaState)

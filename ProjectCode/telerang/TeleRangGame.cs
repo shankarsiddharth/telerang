@@ -6,7 +6,10 @@ using MonoGame.Extended.Collisions;
 using MonoGame.Extended.Tiled;
 using MonoGame.Extended.Tiled.Renderers;
 using MonoGame.Extended.VectorDraw;
+using MonoGame.Extended.Content;
+using MonoGame.Extended.Sprites;
 using telerang.Entities;
+using MonoGame.Extended.Serialization;
 
 namespace telerang
 {
@@ -20,7 +23,7 @@ namespace telerang
         public const string GAME_TITLE = "TeleRang";
 
         private const string TILEMAP_NAME = "untitled";
-        private const string NINJA_SPRITESHEET = "ninja";
+        private const string NINJA_SPRITESHEET = "Animation/Ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
         private const string FLYING_CAR_SPRITESHEET = "flyingcar";
@@ -93,7 +96,10 @@ namespace telerang
             _tiledMapRenderer = new TiledMapRenderer(GraphicsDevice, _tiledMap);
 
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
-            _ninja = new Ninja(_spriteSheetTexture, new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT))
+            _ninja = new Ninja(
+                Content.Load<SpriteSheet>("Animation/Ninja.sf", new JsonContentLoader()),
+                new Texture2D(GraphicsDevice, TILE_WIDTH, TILE_HEIGHT),
+                new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT))
             {
                 DrawOrder = 100
             };
