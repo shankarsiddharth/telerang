@@ -1,12 +1,12 @@
 {
   "textureAtlas": {
     "texture": "Ninja.png",
-    "regionWidth": 64,
-    "regionHeight": 64
+    "regionWidth": 120,
+    "regionHeight": 120
   },
   "cycles": {
     "idle": {
-      "frames": [2]
+      "frames": [2,3,4,5,6]
     },
     "fall": {
       "frames": [2,1,2]

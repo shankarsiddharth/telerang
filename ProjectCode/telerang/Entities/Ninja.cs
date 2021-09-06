@@ -35,7 +35,7 @@ namespace telerang.Entities
         {
             sprite = new AnimatedSprite(spriteSheet);
             SpriteTexture = spriteTexture;
-            sprite.Play("idle");
+            PlayAnim("idle", true);
             Position = initialPosition;
             _startPosition = Position;
             State = NinjaState.Idle;
@@ -43,6 +43,13 @@ namespace telerang.Entities
 
             _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2), Position.Y - (SpriteTexture.Height));
             Bounds = new RectangleF(_spritePosition, new Size2(SpriteTexture.Width, SpriteTexture.Height));
+        }
+
+        public void PlayAnim(string name, bool isLoop) {
+            sprite.Play(name, () =>
+            {
+                if (isLoop) PlayAnim(name, isLoop);
+            });
         }
 
         public void Initialize()

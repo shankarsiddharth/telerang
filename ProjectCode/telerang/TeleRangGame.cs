@@ -98,7 +98,7 @@ namespace telerang
             _spriteSheetTexture = Content.Load<Texture2D>(NINJA_SPRITESHEET);
             _ninja = new Ninja(
                 Content.Load<SpriteSheet>("Animation/Ninja.sf", new JsonContentLoader()),
-                new Texture2D(GraphicsDevice, TILE_WIDTH, TILE_HEIGHT),
+                new Texture2D(GraphicsDevice, 120, 120),
                 new Vector2(GraphicsDevice.Viewport.Width / 2.0f, TILE_HEIGHT))
             {
                 DrawOrder = 100
