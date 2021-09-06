@@ -55,3 +55,4 @@ monodroid*.msi
 /CompiledContent/Windows/IgnoreMe.dll
 *.cachefile
 *.dll
+ProjectCode/.vs/telerang/DesignTimeBuild/.dtbcache.v2
