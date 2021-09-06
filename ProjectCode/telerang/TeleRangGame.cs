@@ -32,8 +32,8 @@ namespace telerang
         private const string MOVING_PLATFORM_LAYER_NAME = "MovingPlatform";
         private const string OBSTACLES_LAYER_NAME = "Obstacle";
         
-        private const int TILE_WIDTH = 64;
-        private const int TILE_HEIGHT = 64;
+        private const int TILE_WIDTH = 128;
+        private const int TILE_HEIGHT = 128;
 
         private const float MAXIMUM_DISTANCE = 700.0f;
         private const float TELEPORTING_MAX_TIME = 500.0f;
@@ -137,9 +137,9 @@ namespace telerang
             _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME);
             _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
-<<<<<<< Updated upstream
-            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH);
-        
+            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,
+                _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH,
+                0.25f);
             // === Particle ===
             _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
@@ -151,8 +151,6 @@ namespace telerang
 
             // TODO: add visual entity factory for moving platform
             // === Particle end ===
-=======
->>>>>>> Stashed changes
         }
 
         protected override void Update(GameTime gameTime)
