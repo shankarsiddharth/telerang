@@ -30,6 +30,8 @@ namespace telerang.Entities
 
         public float _WindowWidth { get; set; }
 
+        public float Speed { get; set; }
+
         private Vector2 _startPosition { get; set; }
 
         public MovingPlatform(TiledMapObject mapObject, Texture2D spriteSheetTexture, float WindowWidth)
@@ -44,7 +46,7 @@ namespace telerang.Entities
             Direction = MapObject.Properties.GetValueOrDefault<string, string>("direction");
             if(Direction == null || Direction.Length == 0)
             {
-                Direction = "right";
+                Direction = "left";
             }
         }
 
@@ -66,14 +68,30 @@ namespace telerang.Entities
 
         public void Update(GameTime gameTime)
         {
-            Vector2 endPoint = new Vector2(Position.X + MapObject.Size.Width, Position.Y + MapObject.Size.Height);
-            //Position += new Vector2(-0.25f, 0);
-            Position += new Vector2(-2f, 0);
-            if (endPoint.X < 0)
+            if(Direction.Equals("left"))
             {
-                Position = new Vector2(_startPosition.X + _WindowWidth, Position.Y);
-            }            
-            Bounds.Position = Position;
+                Vector2 endPoint = new Vector2(Position.X + MapObject.Size.Width, Position.Y + MapObject.Size.Height);
+                //Position += new Vector2(-0.25f, 0);
+                Position += new Vector2(-Speed, 0);
+                if (endPoint.X < 0)
+                {
+                    //Position = new Vector2(_startPosition.X + _WindowWidth, Position.Y);
+                    Position = new Vector2(_WindowWidth + MapObject.Size.Width, Position.Y);
+                }
+                Bounds.Position = Position;
+            }
+            else if(Direction.Equals("right"))
+            {
+                Vector2 endPoint = new Vector2(Position.X - MapObject.Size.Width, Position.Y + MapObject.Size.Height);
+                //Position += new Vector2(-0.25f, 0);
+                Position += new Vector2(Speed, 0);
+                if (endPoint.X > _WindowWidth)
+                {
+                    Position = new Vector2( (0 - MapObject.Size.Width),  Position.Y);
+                }
+                Bounds.Position = Position;
+            }
+            
         }
     }
 }

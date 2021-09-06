@@ -137,6 +137,7 @@ namespace telerang
             _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME);
             _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
+<<<<<<< Updated upstream
             _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager, _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH);
         
             // === Particle ===
@@ -150,6 +151,8 @@ namespace telerang
 
             // TODO: add visual entity factory for moving platform
             // === Particle end ===
+=======
+>>>>>>> Stashed changes
         }
 
         protected override void Update(GameTime gameTime)

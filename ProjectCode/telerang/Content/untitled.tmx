@@ -43,6 +43,10 @@
  <objectgroup id="4" name="Obstacle" locked="1"/>
  <objectgroup id="5" name="MovingPlatform">
   <object id="45" x="344.333" y="889.333" width="204" height="144"/>
-  <object id="47" x="32" y="888" width="204" height="144"/>
+  <object id="47" x="525.939" y="548.606" width="204" height="144">
+   <properties>
+    <property name="direction" value="right"/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

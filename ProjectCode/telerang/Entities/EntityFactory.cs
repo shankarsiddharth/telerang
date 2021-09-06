@@ -69,7 +69,7 @@ namespace telerang.Entities
             return Obstacles;
         }
 
-        
+
         public List<MovingPlatform> CreateMovingPlatforms
             (
             ContentManager contentManager,
@@ -79,6 +79,7 @@ namespace telerang.Entities
             string LEVEL_MAP_NAME,
             string MAP_LAYER_NAME,
             float WindowWidth,
+            float PlatformSpeed = -2.0f,
             int DefaultDrawOrder = 97
             )
         {
@@ -92,7 +93,8 @@ namespace telerang.Entities
                 MovingPlatform newMovingPlatform = new MovingPlatform(tiledMapObjectLayer.Objects[i], spriteSheetTexture, WindowWidth)
                 {
                     DrawOrder = DefaultDrawOrder,
-                    CollisionComponentSimple = collisionComponent
+                    CollisionComponentSimple = collisionComponent,
+                    Speed = PlatformSpeed
                 };
                 MovingPlatforms.Add(newMovingPlatform);
                 entityManager.AddEntity(newMovingPlatform);

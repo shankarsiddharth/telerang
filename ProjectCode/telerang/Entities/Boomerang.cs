@@ -303,6 +303,26 @@ namespace telerang
 
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
         {
+
+            List<TiledMapObject> objects = new List<TiledMapObject>();
+
+            TiledMapObject[] platformObjects = _tiledMapPlatformObjectLayer.Objects;
+            TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;
+
+            for (int i = 0; i < platformObjects.Length; i++)
+            {
+                objects.Add(platformObjects[i]);
+            }
+            for (int i = 0; i < flyingCarObjects.Length; i++)
+            {
+                objects.Add(flyingCarObjects[i]);
+            }
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
+                primitiveDrawing.DrawRectangle(new Vector2(boundingBox.X, boundingBox.Y), boundingBox.Width, boundingBox.Height, Color.Green);
+            }
+
             switch (_ninja.State)
             {
                 case NinjaState.Idle:
@@ -350,7 +370,7 @@ namespace telerang
             for (int i = 0; i < objects.Count; i++)
             {
                 RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
-                if (boundingBox.Contains(Position))
+                if (boundingBox.Contains(_ninja.Position))
                 {
                     abyss = false;
                     return abyss;
