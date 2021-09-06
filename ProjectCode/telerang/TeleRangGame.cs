@@ -144,7 +144,9 @@ namespace telerang
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
             _visualEntityManager.AddEntity(_boomerangTrail);
 
-            _boomerang.BoomerangReleased += _boomerangTrail.OnBoomerangReleased;
+            _boomerang.OnBoomerangRelease += _boomerangTrail.OnBoomerangReleased;
+            _boomerang.OnBoomerangCatch += _boomerangTrail.OnBoomerangCatched;
+            _boomerang.OnBoomerangTeleport += _boomerangTrail.OnBoomerangTeleported;
 
             // TODO: add visual entity factory for moving platform
             // === Particle end ===

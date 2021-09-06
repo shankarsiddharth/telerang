@@ -18,12 +18,21 @@ using MonoGame.Extended.TextureAtlases;
 
 namespace telerang.Entities
 {
+
+
     class BoomerangTrail : IVisualEntity
     {
+        enum State
+        {
+            Enabled,
+            Disabled,
+            PendingToDisable
+        }
+
         public Vector2 Position { get; set; }
         public int DrawOrder { get; set; }
 
-        bool _enabled;
+        State _state = State.Disabled;
 
         private ParticleEffect _particleEffect;
         private Texture2D _particleTexture;
@@ -32,7 +41,7 @@ namespace telerang.Entities
         private Timer _disableTimer;
 
         // Particle parameters //
-        private float _timeSpan = 0.5f;
+        private float _timeSpan = 0.25f;
         // Particle parameters end //
 
         public BoomerangTrail(Texture2D trailParticleTexture2D, Boomerang boomerang = null)
@@ -49,10 +58,11 @@ namespace telerang.Entities
             _particleTexture.SetData(new[] { Color.White });
             textureRegion = new TextureRegion2D(_particleTexture);
             _disableTimer = new Timer(_timeSpan);
+            _disableTimer.AutoReset = false;
             _disableTimer.Stop();
             _disableTimer.Elapsed += new ElapsedEventHandler(disableElapsed);
-            Disable();
         }
+
         public void Update(GameTime gameTime)
         {
             // Test
@@ -66,7 +76,11 @@ namespace telerang.Entities
             }
             // Test end
 
-            if (_enabled)
+            if (
+                //_state != State.Disabled 
+                //|| true
+                _particleEffect != null
+                )
             {
                 Position = _boomerang.Position;
                 _particleEffect.Position = Position;
@@ -76,23 +90,32 @@ namespace telerang.Entities
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
         {
-            if (_enabled)
+            if (
+                //_state != State.Disabled 
+                //|| true
+                _particleEffect != null
+                )
             {
                 spriteBatch.Draw(_particleEffect);
             }
         }
 
-        public void Enable()
+        private void Enable()
         {
-            if (_particleEffect != null && !_enabled)
+            if(_state == State.PendingToDisable)
             {
-                _particleEffect.Dispose();
+                _disableTimer.Stop();
             }
-
-            _particleEffect = new ParticleEffect(autoTrigger: false)
+            if (_particleEffect != null && _state != State.Disabled)
             {
-                Position = Position,
-                Emitters = new List<ParticleEmitter>
+                _particleEffect.Emitters[0].AutoTrigger = true;
+            }
+            else
+            {
+                _particleEffect = new ParticleEffect(autoTrigger: false)
+                {
+                    Position = Position,
+                    Emitters = new List<ParticleEmitter>
                 {
                     new ParticleEmitter(textureRegion, 500, TimeSpan.FromSeconds(_timeSpan),
                         Profile.Point())
@@ -123,22 +146,22 @@ namespace telerang.Entities
                         }
                     }
                 }
-            };
-            _enabled = true;
-        }
-
-        public void Disable()
-        {
-            _disableTimer.Start();
-            _enabled = false;
-        }
-
-        void disableElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (_particleEffect != null && !_enabled)
-            {
-                _particleEffect.Dispose();
+                };
             }
+            _state = State.Enabled;
+        }
+
+        private void Disable()
+        {
+            _particleEffect.Emitters[0].AutoTrigger = false;
+            _disableTimer.Start();
+            _state = State.PendingToDisable;
+        }
+
+        private void disableElapsed(object sender, ElapsedEventArgs e)
+        {
+            //_particleEffect.Dispose();  <- this looks like can crash the game with -1073740940 code.  Heap corruption?  Sorry I'm not a real engineer so I don't know how to fix it.
+            _state = State.Disabled;
         }
 
         public void OnBoomerangReleased(object sender, TeleRangEventArgs teleRangEventArgs)
