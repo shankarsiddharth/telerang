@@ -13,6 +13,8 @@ using MonoGame.Extended.Serialization;
 using MonoGame.Extended.Screens;
 using telerang.Screens;
 using MonoGame.Extended.Screens.Transitions;
+using Microsoft.Xna.Framework.Audio;
+using System.Collections.Generic;
 
 namespace telerang
 {
@@ -60,6 +62,7 @@ namespace telerang
         private Boomerang _boomerang;
 
         private Texture2D _spriteSheetTexture;
+        private List<SoundEffect> _soundEffects;
 
         private readonly CollisionComponent _collisionComponent;
         private readonly ScreenManager _screenManager;
@@ -121,7 +124,13 @@ namespace telerang
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
-            _boomerang = new Boomerang(_spriteSheetTexture, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap, _entityManager)
+
+            _soundEffects = new List<SoundEffect>();
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Hits_Obstacle_Sound"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Throw_Sound"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Player_Falls"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Quick_Teleport_Sound_new"));
+            _boomerang = new Boomerang(_spriteSheetTexture,_soundEffects, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap, _entityManager)
             {
                 DrawOrder = 101,  
                 MaxTime = TELEPORTING_MAX_TIME,

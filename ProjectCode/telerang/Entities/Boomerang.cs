@@ -11,12 +11,14 @@ using System.Linq;
 using System.Collections.Generic;
 using telerang.Entities;
 using telerang.Shapes;
+using Microsoft.Xna.Framework.Audio;
 
 namespace telerang
 {
     public class Boomerang : IGameEntity
     {
         public Texture2D SpriteTexture { get; set; }
+        public List<SoundEffect> SoundEffects;
 
         public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
         public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
@@ -63,9 +65,10 @@ namespace telerang
         private float _angularVelocity = 3.0f;
         private float _anglePassed = 0;
 
-        public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap, EntityManager entityManager)
+        public Boomerang(Texture2D spriteTexture,List<SoundEffect> soundEffects, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap, EntityManager entityManager)
         {
             SpriteTexture = spriteTexture;
+            SoundEffects = soundEffects;
             Position = initialPosition;
             _startPosition = Position;           
             _cursor = cursor;
@@ -161,7 +164,7 @@ namespace telerang
                             _anglePassed = 0f;
 
                             _ninja.ChangeState(NinjaState.Teleporting);
-
+                            SoundEffects[1].Play();
                             //_ninja.Position = mousePosition;
                             TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             teleRangEventArgs.position = Position;
@@ -388,21 +391,28 @@ namespace telerang
                 ushort x = (ushort)(Position.X / TileWidth);
                 ushort y = (ushort)(Position.Y / TileHeight);
 
-                if(CheckAbyss())
+                if (CheckAbyss())
                 //if (IsAbyss(x, y))
                 {
                     Console.WriteLine("Dead");
+                    SoundEffects[2].Play();
                     _ninja.sprite.Play("fall", () =>
                     {
                         _ninja.ChangeState(NinjaState.Idle);
                         _ninja.ReSpawn();
                     });
                 }
-                else _ninja.sprite.Play("teleportEnd", () => {
-                    Console.WriteLine("Still Alive");
-                    _ninja.ChangeState(NinjaState.Idle);
-                    IfOnPlatformMoveNinja();
-                });
+                else
+                {
+                    SoundEffects[3].Play();
+                    _ninja.sprite.Play("teleportEnd", () =>
+                    {
+
+                        Console.WriteLine("Still Alive");
+                        _ninja.ChangeState(NinjaState.Idle);
+                        IfOnPlatformMoveNinja();
+                    });
+                }
             });
         }
 
@@ -637,6 +647,7 @@ namespace telerang
             //throw new NotImplementedException();
             Console.WriteLine(collisionInfo.Other.GetType().Name);
             if (collisionInfo.Other.GetType().Name == "Obstacle") {
+                SoundEffects[0].Play();
                 _ninja.ChangeState(NinjaState.Idle);
                 Position = _startPosition;
                 TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
