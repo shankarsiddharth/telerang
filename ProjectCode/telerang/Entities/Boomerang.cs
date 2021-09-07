@@ -130,6 +130,8 @@ namespace telerang
                         }
 
                         _cursorPosition = mousePosition;
+                        if (_cursorPosition.X >= _ninja.Position.X) _ninja.PlayAnim("aimingR", true);
+                        else _ninja.PlayAnim("aimingL", true);
 
                         if (mouseState.LeftButton == ButtonState.Released)
                         {

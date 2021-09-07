@@ -114,7 +114,7 @@ namespace telerang.Entities
 
                 case NinjaState.Aiming:
                     {
-                        PlayAnim("aiming", true);
+                        //PlayAnim("aiming", true);
                     }
                     break;
 
