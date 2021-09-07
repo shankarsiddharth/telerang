@@ -26,7 +26,7 @@ namespace telerang.Entities
             TiledMapObjectLayer tiledMapObjectLayer = tiledMap.GetLayer<TiledMapObjectLayer>(MAP_LAYER_NAME);
             for (int i = 0; i < tiledMapObjectLayer.Objects.Length; i++)
             {
-                Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
+                //Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
                 Platform newPlatform = new Platform(tiledMapObjectLayer.Objects[i])
                 {
                     DrawOrder = DefaultDrawOrder,
@@ -55,7 +55,7 @@ namespace telerang.Entities
             TiledMapObjectLayer tiledMapObjectLayer = tiledMap.GetLayer<TiledMapObjectLayer>(MAP_LAYER_NAME);
             for (int i = 0; i < tiledMapObjectLayer.Objects.Length; i++)
             {
-                Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
+                //Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
                 Obstacle newObstacle = new Obstacle(tiledMapObjectLayer.Objects[i])
                 {
                     DrawOrder = DefaultDrawOrder,
@@ -89,7 +89,7 @@ namespace telerang.Entities
             TiledMapObjectLayer tiledMapObjectLayer = tiledMap.GetLayer<TiledMapObjectLayer>(MAP_LAYER_NAME);
             for (int i = 0; i < tiledMapObjectLayer.Objects.Length; i++)
             {
-                Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
+                //Console.WriteLine(tiledMapObjectLayer.Objects[i].Identifier);
                 MovingPlatform newMovingPlatform = new MovingPlatform(tiledMapObjectLayer.Objects[i], spriteSheetTexture, WindowWidth)
                 {
                     DrawOrder = DefaultDrawOrder,
