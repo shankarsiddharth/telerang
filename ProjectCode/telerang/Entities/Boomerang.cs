@@ -161,9 +161,9 @@ namespace telerang
                             _ninja.ChangeState(NinjaState.Teleporting);
 
                             //_ninja.Position = mousePosition;
-                            //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
-                            //teleRangEventArgs.position = Position;
-                            //OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
+                            TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                            teleRangEventArgs.position = Position;
+                            OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
 
                            /* Vector2 A = (new Vector2(WindowWidth, 0)) - _ninja.Position;
                             Vector2 B = _cursorPosition - _ninja.Position;
@@ -254,7 +254,8 @@ namespace telerang
             }
             else {
                 float delta= (float)(gameTime.ElapsedGameTime.TotalSeconds * _angularVelocity);
-                _angle += delta;
+                if (_cursorPosition.X >= _ninja.Position.X) _angle += delta;
+                else _angle -= delta;
                 _anglePassed += delta;
                 var displacedPosition = midpoint + new Vector2(radius * (float)Math.Cos(_angle), radius * (float)Math.Sin(_angle));
                 Position = displacedPosition;
