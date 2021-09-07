@@ -4,19 +4,19 @@
  <imagelayer id="6" name="Image Layer 1">
   <image source="Levels/map2_end.png" width="960" height="960"/>
  </imagelayer>
- <imagelayer id="10" name="Image Layer 2" offsetx="69.3333" offsety="117.333">
+ <imagelayer id="13" name="Car 5" offsetx="629.333" offsety="114.667">
   <image source="flyingcar.png" width="256" height="189"/>
  </imagelayer>
- <imagelayer id="14" name="Copy of Image Layer 2" offsetx="202.667" offsety="529.333">
+ <imagelayer id="10" name="Car 4" offsetx="69.3333" offsety="117.333">
   <image source="flyingcar.png" width="256" height="189"/>
  </imagelayer>
- <imagelayer id="15" name="Copy of Copy of Image Layer 2" offsetx="516" offsety="528">
+ <imagelayer id="14" name="Car 2" offsetx="202.667" offsety="529.333">
   <image source="flyingcar.png" width="256" height="189"/>
  </imagelayer>
- <imagelayer id="12" name="Copy of Image Layer 2" offsetx="356" offsety="116">
+ <imagelayer id="15" name="Car 3" offsetx="516" offsety="528">
   <image source="flyingcar.png" width="256" height="189"/>
  </imagelayer>
- <imagelayer id="13" name="Copy of Copy of Image Layer 2" offsetx="629.333" offsety="114.667">
+ <imagelayer id="12" name="Car 1" offsetx="356" offsety="116">
   <image source="flyingcar.png" width="256" height="189"/>
  </imagelayer>
  <objectgroup id="8" name="Platform">
