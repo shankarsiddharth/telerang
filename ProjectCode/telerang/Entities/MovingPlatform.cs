@@ -48,6 +48,17 @@ namespace telerang.Entities
             {
                 Direction = "left";
             }
+            else
+            {
+                if(Direction.Equals("left"))
+                {
+                    Speed *= 1.0f;
+                }
+                else if(Direction.Equals("right"))
+                {
+                    Speed *= -1.0f;
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -72,7 +83,7 @@ namespace telerang.Entities
             {
                 Vector2 endPoint = new Vector2(Position.X + MapObject.Size.Width, Position.Y + MapObject.Size.Height);
                 //Position += new Vector2(-0.25f, 0);
-                Position += new Vector2(-Speed, 0);
+                Position += new Vector2(Speed, 0);
                 if (endPoint.X < 0)
                 {
                     //Position = new Vector2(_startPosition.X + _WindowWidth, Position.Y);

@@ -93,12 +93,7 @@ namespace telerang
             {
                 case NinjaState.Idle:
                     {
-
-                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                        if (CurrentMovingPlatform != null)
-                        {
-                            _ninja.Position += new Vector2(-2f, 0);
-                        }
+                        IfOnPlatformMoveNinja();
 
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
@@ -114,10 +109,10 @@ namespace telerang
                 case NinjaState.Aiming:
                     {
 
-                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
+                        MovingPlatform CurrentMovingPlatform = GetCurrentMovingPlatform();
                         if (CurrentMovingPlatform != null)
                         {
-                            _ninja.Position += new Vector2(-2f, 0);
+                            _ninja.Position += new Vector2(CurrentMovingPlatform.Speed, 0);
                         }
 
                         if (mousePosition.Y <= ninjaPosition.Y)
@@ -197,6 +192,15 @@ namespace telerang
 
                     }
                     break;
+            }
+        }
+
+        private void IfOnPlatformMoveNinja()
+        {
+            MovingPlatform CurrentMovingPlatform = GetCurrentMovingPlatform();            
+            if (CurrentMovingPlatform != null)
+            {
+                _ninja.Position = CurrentMovingPlatform.Position;
             }
         }
 
@@ -393,13 +397,7 @@ namespace telerang
                 else _ninja.sprite.Play("teleportEnd", () => {
                     Console.WriteLine("Still Alive");
                     _ninja.ChangeState(NinjaState.Idle);
-                    TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                    if (CurrentMovingPlatform != null)
-                    {
-                        _ninja.Position += new Vector2(-2f, 0);
-                    }
-
-
+                    IfOnPlatformMoveNinja();
                 });
             });
         }
@@ -488,6 +486,21 @@ namespace telerang
             return abyss;
         }
 
+        private MovingPlatform GetCurrentMovingPlatform()
+        {
+            MovingPlatform movingPlatform = null;
+            List<MovingPlatform> objects = _entityManager.GetEntitiesOfType<MovingPlatform>().ToList();
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = (RectangleF)objects[i].Bounds;
+                if (boundingBox.Contains(Position))
+                {
+                    return objects[i];
+                }
+            }
+            return movingPlatform;
+        }
+
         private bool IsAbyss(ushort x, ushort y)
         {            
             bool abyss = true;            
@@ -516,26 +529,26 @@ namespace telerang
             }
             return abyss;
         }
-
-        private TiledMapObject GetCurrentMovingPlatform()
-        {
-            TiledMapObject movingPlatform = null;
-            List<TiledMapObject> objects = new List<TiledMapObject>();           
-            TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;                        
-            for (int i = 0; i < flyingCarObjects.Length; i++)
-            {
-                objects.Add(flyingCarObjects[i]);
-            }
-            for (int i = 0; i < objects.Count; i++)
-            {
-                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
-                if (boundingBox.Contains(Position))
-                {
-                    return objects[i];
-                }
-            }
-            return movingPlatform;
-        }
+        
+        /* private TiledMapObject GetCurrentMovingPlatform()
+         {
+             TiledMapObject movingPlatform = null;
+             List<TiledMapObject> objects = new List<TiledMapObject>();           
+             TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;                        
+             for (int i = 0; i < flyingCarObjects.Length; i++)
+             {
+                 objects.Add(flyingCarObjects[i]);
+             }
+             for (int i = 0; i < objects.Count; i++)
+             {
+                 RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
+                 if (boundingBox.Contains(Position))
+                 {
+                     return objects[i];
+                 }
+             }
+             return movingPlatform;
+         }*/
 
         private bool IsObject(ushort x, ushort y)
         {

@@ -145,7 +145,7 @@ namespace telerang
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
             _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,
                 _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH,
-                0.25f);
+                2);
             // === Particle ===
             _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
