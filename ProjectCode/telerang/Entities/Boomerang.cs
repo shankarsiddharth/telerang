@@ -20,6 +20,7 @@ namespace telerang
         public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
         public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
         public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangAim;
 
         public Vector2 Position { get; set; }
         public float MaxTime { get; set; }
@@ -97,6 +98,10 @@ namespace telerang
 
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
+                            TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                            teleRangEventArgs.position = Position;
+                            OnBoomerangAim?.Invoke(this, teleRangEventArgs);
+
                             _ninja.ChangeState(NinjaState.Aiming);
                         }
                     }
