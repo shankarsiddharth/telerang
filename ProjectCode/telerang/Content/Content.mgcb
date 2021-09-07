@@ -26,7 +26,7 @@
 /processorParam:TextureFormat=Color
 /build:Animation/Ninja.png
 
-#begin Boomerang.png
+#begin boomerang.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -36,7 +36,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Boomerang.png;boomerang.png
+/build:boomerang.png
 
 #begin cursor_hand.png
 /importer:TextureImporter
