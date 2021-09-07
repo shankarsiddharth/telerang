@@ -62,6 +62,8 @@ namespace telerang
 
         // === Particle ===
 
+        private Texture2D _highlightTexture;
+
         private BoomerangTrail _boomerangTrail;
         private Texture2D _boomerangTrailTexture;
 
@@ -134,7 +136,10 @@ namespace telerang
             _collisionComponent.Insert(_boomerang);
 
             _entityFactory = new EntityFactory();
-            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME);
+
+            _highlightTexture = new Texture2D(GraphicsDevice, 1, 1);
+
+            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME, visualEntityManager: _visualEntityManager, highlightParticleTexture: _highlightTexture, boomerang:_boomerang);
             _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
             _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,

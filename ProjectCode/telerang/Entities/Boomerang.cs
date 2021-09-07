@@ -419,7 +419,7 @@ namespace telerang
             for (int i = 0; i < objects.Count; i++)
             {
                 RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
-                primitiveDrawing.DrawRectangle(new Vector2(boundingBox.X, boundingBox.Y), boundingBox.Width, boundingBox.Height, Color.Green);
+                //primitiveDrawing.DrawRectangle(new Vector2(boundingBox.X, boundingBox.Y), boundingBox.Width, boundingBox.Height, Color.Green);
             }
 
             switch (_ninja.State)

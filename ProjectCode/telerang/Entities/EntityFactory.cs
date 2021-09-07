@@ -14,10 +14,13 @@ namespace telerang.Entities
             (
             ContentManager contentManager,
             CollisionComponent collisionComponent,
-            EntityManager entityManager, 
-            string LEVEL_MAP_NAME, 
+            EntityManager entityManager,
+            string LEVEL_MAP_NAME,
             string MAP_LAYER_NAME,
-            int DefaultDrawOrder = 95
+            int DefaultDrawOrder = 95,
+            VisualEntityManager visualEntityManager = null,
+            Texture2D highlightParticleTexture = null,
+            Boomerang boomerang = null
             )
         {
             List<Platform> Platforms = new List<Platform>();
@@ -35,6 +38,11 @@ namespace telerang.Entities
                 Platforms.Add(newPlatform);
                 entityManager.AddEntity(newPlatform);
                 collisionComponent.Insert(newPlatform);
+
+                PlatformHighlight platformHighlight = new PlatformHighlight(highlightParticleTexture, newPlatform);
+                boomerang.OnBoomerangAim += platformHighlight.OnBoomerangAim;
+                boomerang.OnBoomerangRelease += platformHighlight.OnBoomerangReleased;
+                visualEntityManager.AddEntity(platformHighlight);
             }
             return Platforms;
         }
