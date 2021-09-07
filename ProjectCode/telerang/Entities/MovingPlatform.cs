@@ -78,9 +78,10 @@ namespace telerang.Entities
         }
 
         public void Update(GameTime gameTime)
-        {
-            if(Direction.Equals("left"))
+        {            
+            if(Direction.Equals("right"))
             {
+                Console.WriteLine(Position.ToString());
                 Vector2 endPoint = new Vector2(Position.X + MapObject.Size.Width, Position.Y + MapObject.Size.Height);
                 //Position += new Vector2(-0.25f, 0);
                 Position += new Vector2(Speed, 0);
@@ -91,8 +92,9 @@ namespace telerang.Entities
                 }
                 Bounds.Position = Position;
             }
-            else if(Direction.Equals("right"))
+            else if(Direction.Equals("left"))
             {
+                Console.WriteLine(Position.ToString());
                 Vector2 endPoint = new Vector2(Position.X - MapObject.Size.Width, Position.Y + MapObject.Size.Height);
                 //Position += new Vector2(-0.25f, 0);
                 Position += new Vector2(Speed, 0);

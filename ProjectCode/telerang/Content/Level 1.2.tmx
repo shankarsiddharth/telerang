@@ -4,9 +4,6 @@
  <imagelayer id="9" name="Image Layer 1">
   <image source="Levels/map1_end.png" width="960" height="960"/>
  </imagelayer>
- <imagelayer id="10" name="Image Layer 2" offsetx="365.333" offsety="405.333">
-  <image source="flyingcar.png" width="256" height="189"/>
- </imagelayer>
  <objectgroup id="8" name="Platform">
   <object id="3" x="189" y="45" width="151" height="110"/>
   <object id="4" x="252" y="255" width="191" height="122"/>
@@ -17,6 +14,6 @@
  </objectgroup>
  <objectgroup id="7" name="Obstacle"/>
  <objectgroup id="6" name="MovingPlatform">
-  <object id="14" x="421.333" y="417.333" width="120" height="82.6667"/>
+  <object id="14" x="367.333" y="413.333" width="204" height="143"/>
  </objectgroup>
 </map>

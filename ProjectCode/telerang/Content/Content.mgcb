@@ -62,6 +62,11 @@
 /processorParam:TextureFormat=Color
 /build:flyingcar.png
 
+#begin Level 1.2.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:Level 1.2.tmx
+
 #begin Lvl 1.tmx
 /importer:TiledMapImporter
 /processor:TiledMapProcessor
