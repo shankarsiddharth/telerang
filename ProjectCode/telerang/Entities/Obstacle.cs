@@ -10,7 +10,7 @@ using System.Text;
 
 namespace telerang.Entities
 {
-    class Obstacle : IGameEntity
+    public class Obstacle : IGameEntity
     {
         public int DrawOrder { get; set; }
 

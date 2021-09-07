@@ -8,7 +8,7 @@ using System.Text;
 
 namespace telerang.Entities
 {
-    class EntityFactory
+    public class EntityFactory
     {
         public List<Platform> CreatePlatforms
             (

@@ -10,19 +10,25 @@ using MonoGame.Extended.Content;
 using MonoGame.Extended.Sprites;
 using telerang.Entities;
 using MonoGame.Extended.Serialization;
+using MonoGame.Extended.Screens;
+using telerang.Screens;
+using MonoGame.Extended.Screens.Transitions;
+using Microsoft.Xna.Framework.Audio;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework.Media;
 
 namespace telerang
 {
     public class TeleRangGame : Game
     {
         //Public
-        public const int WINDOW_WIDTH = 1024;
+        public const int WINDOW_WIDTH = 960;
 
-        public const int WINDOW_HEIGHT = 1024;
+        public const int WINDOW_HEIGHT = 960;
 
         public const string GAME_TITLE = "TeleRang";
 
-        private const string TILEMAP_NAME = "untitled";
+        private const string TILEMAP_NAME = "Level 1.2";
         private const string NINJA_SPRITESHEET = "Animation/Ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
@@ -57,8 +63,11 @@ namespace telerang
         private Boomerang _boomerang;
 
         private Texture2D _spriteSheetTexture;
+        private List<SoundEffect> _soundEffects;
+        private Song _bgm;
 
         private readonly CollisionComponent _collisionComponent;
+        private readonly ScreenManager _screenManager;
 
         // === Particle ===
 
@@ -79,6 +88,8 @@ namespace telerang
             _visualEntityManager = new VisualEntityManager();
             IsMouseVisible = false;
             _collisionComponent = new CollisionComponent(new RectangleF(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+            _screenManager = new ScreenManager();
+            Components.Add(_screenManager);
         }
 
         protected override void Initialize()
@@ -117,7 +128,19 @@ namespace telerang
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
-            _boomerang = new Boomerang(_spriteSheetTexture, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap)
+
+            _soundEffects = new List<SoundEffect>();
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Hits_Obstacle_Sound"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Throw_Sound"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Player_Falls"));
+            _soundEffects.Add(Content.Load<SoundEffect>("Audio/Quick_Teleport_Sound_new"));
+
+            _bgm=Content.Load<Song>("Audio/ClubBeat_14_V3");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.5f;
+            MediaPlayer.Play(_bgm);
+
+            _boomerang = new Boomerang(_spriteSheetTexture,_soundEffects, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap, _entityManager)
             {
                 DrawOrder = 101,  
                 MaxTime = TELEPORTING_MAX_TIME,
@@ -144,7 +167,7 @@ namespace telerang
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
             _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,
                 _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH,
-                0.25f);
+                2);
             // === Particle ===
             _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
@@ -196,5 +219,21 @@ namespace telerang
 
             base.Draw(gameTime);
         }
+
+        private void LoadLevelLoader()
+        {
+            _screenManager.LoadScreen(new LevelLoader(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
+        private void LoadLevel1()
+        {
+            _screenManager.LoadScreen(new Level1(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
+        private void LoadLevel2()
+        {
+            _screenManager.LoadScreen(new Level2(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
     }
 }

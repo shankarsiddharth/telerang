@@ -7,22 +7,33 @@ using MonoGame.Extended.Tiled;
 using MonoGame.Extended.VectorDraw;
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using telerang.Entities;
 using telerang.Shapes;
+using Microsoft.Xna.Framework.Audio;
 
 namespace telerang
 {
-    internal class Boomerang : IGameEntity
+    public class Boomerang : IGameEntity
     {
         public Texture2D SpriteTexture { get; set; }
+        public List<SoundEffect> SoundEffects;
 
         public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
         public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
         public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
         public event EventHandler<TeleRangEventArgs> OnBoomerangAim;
 
-        public Vector2 Position { get; set; }
+        private Vector2 position;
+        public Vector2 Position { 
+            get {return position; } 
+            set {
+                position = value;
+                if(Bounds!=null)Bounds.Position=value;
+            } 
+        }
+        
         public float MaxTime { get; set; }
         public int TileWidth;
         public int TileHeight;
@@ -42,6 +53,7 @@ namespace telerang
         private TiledMapObjectLayer _tiledMapPlatformObjectLayer;
         private TiledMapObjectLayer _tiledMapFlyingCarObjectLayer;
         private TiledMapTile? _tile = null;
+        private EntityManager _entityManager;
 
 
         private Vector2[] _pathToTravel;
@@ -53,15 +65,17 @@ namespace telerang
         private float _angularVelocity = 3.0f;
         private float _anglePassed = 0;
 
-        public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
+        public Boomerang(Texture2D spriteTexture,List<SoundEffect> soundEffects, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap, EntityManager entityManager)
         {
             SpriteTexture = spriteTexture;
+            SoundEffects = soundEffects;
             Position = initialPosition;
             _startPosition = Position;           
             _cursor = cursor;
             _ninja = ninja;
             _maximumDistance = maximumDistance;
             _tiledMap = tiledMap;
+            _entityManager = entityManager;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
             _tiledMapPlatformObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
@@ -90,12 +104,7 @@ namespace telerang
             {
                 case NinjaState.Idle:
                     {
-
-                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                        if (CurrentMovingPlatform != null)
-                        {
-                            _ninja.Position += new Vector2(-2f, 0);
-                        }
+                        IfOnPlatformMoveNinja();
 
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
@@ -111,11 +120,7 @@ namespace telerang
                 case NinjaState.Aiming:
                     {
 
-                        TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                        if (CurrentMovingPlatform != null)
-                        {
-                            _ninja.Position += new Vector2(-2f, 0);
-                        }
+                        IfOnPlatformMoveNinja();
 
                         if (mousePosition.Y <= ninjaPosition.Y)
                         {
@@ -159,7 +164,7 @@ namespace telerang
                             _anglePassed = 0f;
 
                             _ninja.ChangeState(NinjaState.Teleporting);
-
+                            SoundEffects[1].Play();
                             //_ninja.Position = mousePosition;
                             TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             teleRangEventArgs.position = Position;
@@ -194,6 +199,15 @@ namespace telerang
 
                     }
                     break;
+            }
+        }
+
+        private void IfOnPlatformMoveNinja()
+        {
+            MovingPlatform CurrentMovingPlatform = GetCurrentMovingPlatform();            
+            if (CurrentMovingPlatform != null)
+            {
+                _ninja.Position = CurrentMovingPlatform.Position;
             }
         }
 
@@ -357,7 +371,7 @@ namespace telerang
                         _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2.0f), Position.Y - (SpriteTexture.Height / 2.0f));
                         spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
                         //Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
-                        //spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
+                        spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
                     break;
 
@@ -377,26 +391,28 @@ namespace telerang
                 ushort x = (ushort)(Position.X / TileWidth);
                 ushort y = (ushort)(Position.Y / TileHeight);
 
-                if (IsAbyss(x, y))
+                if (CheckAbyss())
+                //if (IsAbyss(x, y))
                 {
                     Console.WriteLine("Dead");
+                    SoundEffects[2].Play();
                     _ninja.sprite.Play("fall", () =>
                     {
                         _ninja.ChangeState(NinjaState.Idle);
                         _ninja.ReSpawn();
                     });
                 }
-                else _ninja.sprite.Play("teleportEnd", () => {
-                    Console.WriteLine("Still Alive");
-                    _ninja.ChangeState(NinjaState.Idle);
-                    TiledMapObject CurrentMovingPlatform = GetCurrentMovingPlatform();
-                    if (CurrentMovingPlatform != null)
+                else
+                {
+                    SoundEffects[3].Play();
+                    _ninja.sprite.Play("teleportEnd", () =>
                     {
-                        _ninja.Position += new Vector2(-2f, 0);
-                    }
 
-
-                });
+                        Console.WriteLine("Still Alive");
+                        _ninja.ChangeState(NinjaState.Idle);
+                        IfOnPlatformMoveNinja();
+                    });
+                }
             });
         }
 
@@ -448,10 +464,60 @@ namespace telerang
                     break;
             }
         }
+        
+        private bool CheckAbyss()
+        {
+            bool abyss = true;
+
+            List<MovingPlatform> movingPlatforms = _entityManager.GetEntitiesOfType<MovingPlatform>().ToList();
+            List<Platform> platforms = _entityManager.GetEntitiesOfType<Platform>().ToList();
+            List<Obstacle> obstacle = _entityManager.GetEntitiesOfType<Obstacle>().ToList();
+
+            for (int i = 0; i < platforms.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)platforms[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;
+                }
+            }
+            for (int i = 0; i < movingPlatforms.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)movingPlatforms[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;                    
+                }
+            }            
+            for (int i = 0; i < obstacle.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)obstacle[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;
+                }
+            }
+            return abyss;
+        }
+
+        private MovingPlatform GetCurrentMovingPlatform()
+        {
+            MovingPlatform movingPlatform = null;
+            List<MovingPlatform> objects = _entityManager.GetEntitiesOfType<MovingPlatform>().ToList();
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = (RectangleF)objects[i].Bounds;
+                if (boundingBox.Contains(_ninja.Position))
+                {
+                    return objects[i];
+                }
+            }
+            return movingPlatform;
+        }
 
         private bool IsAbyss(ushort x, ushort y)
         {            
-            bool abyss = true;
+            bool abyss = true;            
 
             List<TiledMapObject> objects = new List<TiledMapObject>();
 
@@ -477,26 +543,26 @@ namespace telerang
             }
             return abyss;
         }
-
-        private TiledMapObject GetCurrentMovingPlatform()
-        {
-            TiledMapObject movingPlatform = null;
-            List<TiledMapObject> objects = new List<TiledMapObject>();           
-            TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;                        
-            for (int i = 0; i < flyingCarObjects.Length; i++)
-            {
-                objects.Add(flyingCarObjects[i]);
-            }
-            for (int i = 0; i < objects.Count; i++)
-            {
-                RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
-                if (boundingBox.Contains(Position))
-                {
-                    return objects[i];
-                }
-            }
-            return movingPlatform;
-        }
+        
+        /* private TiledMapObject GetCurrentMovingPlatform()
+         {
+             TiledMapObject movingPlatform = null;
+             List<TiledMapObject> objects = new List<TiledMapObject>();           
+             TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;                        
+             for (int i = 0; i < flyingCarObjects.Length; i++)
+             {
+                 objects.Add(flyingCarObjects[i]);
+             }
+             for (int i = 0; i < objects.Count; i++)
+             {
+                 RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
+                 if (boundingBox.Contains(Position))
+                 {
+                     return objects[i];
+                 }
+             }
+             return movingPlatform;
+         }*/
 
         private bool IsObject(ushort x, ushort y)
         {
@@ -580,6 +646,14 @@ namespace telerang
         {
             //throw new NotImplementedException();
             Console.WriteLine(collisionInfo.Other.GetType().Name);
+            if (collisionInfo.Other.GetType().Name == "Obstacle") {
+                SoundEffects[0].Play();
+                _ninja.ChangeState(NinjaState.Idle);
+                Position = _startPosition;
+                TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                teleRangEventArgs.position = Position;
+                OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
+            }
            /* if (collisionInfo.Other.GetType().Name != "Platform")
             {
                 _ninja.IsAlive = false;
