@@ -10,6 +10,9 @@ using MonoGame.Extended.Content;
 using MonoGame.Extended.Sprites;
 using telerang.Entities;
 using MonoGame.Extended.Serialization;
+using MonoGame.Extended.Screens;
+using telerang.Screens;
+using MonoGame.Extended.Screens.Transitions;
 
 namespace telerang
 {
@@ -59,6 +62,7 @@ namespace telerang
         private Texture2D _spriteSheetTexture;
 
         private readonly CollisionComponent _collisionComponent;
+        private readonly ScreenManager _screenManager;
 
         // === Particle ===
 
@@ -77,6 +81,8 @@ namespace telerang
             _visualEntityManager = new VisualEntityManager();
             IsMouseVisible = false;
             _collisionComponent = new CollisionComponent(new RectangleF(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT));
+            _screenManager = new ScreenManager();
+            Components.Add(_screenManager);
         }
 
         protected override void Initialize()
@@ -115,7 +121,7 @@ namespace telerang
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
-            _boomerang = new Boomerang(_spriteSheetTexture, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap)
+            _boomerang = new Boomerang(_spriteSheetTexture, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap, _entityManager)
             {
                 DrawOrder = 101,  
                 MaxTime = TELEPORTING_MAX_TIME,
@@ -191,5 +197,21 @@ namespace telerang
 
             base.Draw(gameTime);
         }
+
+        private void LoadLevelLoader()
+        {
+            _screenManager.LoadScreen(new LevelLoader(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
+        private void LoadLevel1()
+        {
+            _screenManager.LoadScreen(new Level1(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
+        private void LoadLevel2()
+        {
+            _screenManager.LoadScreen(new Level2(this), new FadeTransition(GraphicsDevice, Color.Black));
+        }
+
     }
 }

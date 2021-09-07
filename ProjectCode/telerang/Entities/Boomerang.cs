@@ -7,6 +7,7 @@ using MonoGame.Extended.Tiled;
 using MonoGame.Extended.VectorDraw;
 
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using telerang.Entities;
 using telerang.Shapes;
@@ -42,6 +43,7 @@ namespace telerang
         private TiledMapObjectLayer _tiledMapPlatformObjectLayer;
         private TiledMapObjectLayer _tiledMapFlyingCarObjectLayer;
         private TiledMapTile? _tile = null;
+        private EntityManager _entityManager;
 
 
         private Vector2[] _pathToTravel;
@@ -53,7 +55,7 @@ namespace telerang
         private float _angularVelocity = 3.0f;
         private float _anglePassed = 0;
 
-        public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
+        public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap, EntityManager entityManager)
         {
             SpriteTexture = spriteTexture;
             Position = initialPosition;
@@ -62,6 +64,7 @@ namespace telerang
             _ninja = ninja;
             _maximumDistance = maximumDistance;
             _tiledMap = tiledMap;
+            _entityManager = entityManager;
 
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
             _tiledMapPlatformObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
@@ -377,7 +380,8 @@ namespace telerang
                 ushort x = (ushort)(Position.X / TileWidth);
                 ushort y = (ushort)(Position.Y / TileHeight);
 
-                if (IsAbyss(x, y))
+                if(CheckAbyss())
+                //if (IsAbyss(x, y))
                 {
                     Console.WriteLine("Dead");
                     _ninja.sprite.Play("fall", () =>
@@ -448,10 +452,45 @@ namespace telerang
                     break;
             }
         }
+        
+        private bool CheckAbyss()
+        {
+            bool abyss = true;
+
+            List<MovingPlatform> movingPlatforms = _entityManager.GetEntitiesOfType<MovingPlatform>().ToList();
+            List<Platform> platforms = _entityManager.GetEntitiesOfType<Platform>().ToList();
+            List<Obstacle> obstacle = _entityManager.GetEntitiesOfType<Obstacle>().ToList();
+
+            for (int i = 0; i < platforms.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)platforms[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;
+                }
+            }
+            for (int i = 0; i < movingPlatforms.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)movingPlatforms[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;                    
+                }
+            }            
+            for (int i = 0; i < obstacle.Count; i++)
+            {
+                RectangleF rectangleF = (RectangleF)obstacle[i].Bounds;
+                if (rectangleF.Contains(_ninja.Position))
+                {
+                    abyss = false;
+                }
+            }
+            return abyss;
+        }
 
         private bool IsAbyss(ushort x, ushort y)
         {            
-            bool abyss = true;
+            bool abyss = true;            
 
             List<TiledMapObject> objects = new List<TiledMapObject>();
 
