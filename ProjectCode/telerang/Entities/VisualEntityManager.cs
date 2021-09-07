@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace telerang.Entities
 {
-    class VisualEntityManager
+    public class VisualEntityManager
     {
         private readonly List<IVisualEntity> _entities = new List<IVisualEntity>();
 
