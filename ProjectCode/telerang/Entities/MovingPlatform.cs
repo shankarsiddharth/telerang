@@ -10,7 +10,7 @@ using System.Text;
 
 namespace telerang.Entities
 {
-    class MovingPlatform : IGameEntity
+    public class MovingPlatform : IGameEntity
     {
         public int DrawOrder { get; set; }
 

@@ -14,7 +14,7 @@ using telerang.Shapes;
 
 namespace telerang
 {
-    internal class Boomerang : IGameEntity
+    public class Boomerang : IGameEntity
     {
         public Texture2D SpriteTexture { get; set; }
 
@@ -109,11 +109,7 @@ namespace telerang
                 case NinjaState.Aiming:
                     {
 
-                        MovingPlatform CurrentMovingPlatform = GetCurrentMovingPlatform();
-                        if (CurrentMovingPlatform != null)
-                        {
-                            _ninja.Position += new Vector2(CurrentMovingPlatform.Speed, 0);
-                        }
+                        IfOnPlatformMoveNinja();
 
                         if (mousePosition.Y <= ninjaPosition.Y)
                         {
@@ -493,7 +489,7 @@ namespace telerang
             for (int i = 0; i < objects.Count; i++)
             {
                 RectangleF boundingBox = (RectangleF)objects[i].Bounds;
-                if (boundingBox.Contains(Position))
+                if (boundingBox.Contains(_ninja.Position))
                 {
                     return objects[i];
                 }
