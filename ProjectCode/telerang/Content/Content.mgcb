@@ -97,6 +97,11 @@
 /processor:TiledMapProcessor
 /build:Level 1.2.tmx
 
+#begin level2.tmx
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/build:level2.tmx
+
 #begin Lvl 1.tmx
 /importer:TiledMapImporter
 /processor:TiledMapProcessor

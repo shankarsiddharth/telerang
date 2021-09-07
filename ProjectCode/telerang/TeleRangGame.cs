@@ -29,6 +29,7 @@ namespace telerang
         public const string GAME_TITLE = "TeleRang";
 
         private const string TILEMAP_NAME = "Level 1.2";
+        //private const string TILEMAP_NAME = "level2";
         private const string NINJA_SPRITESHEET = "Animation/Ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";

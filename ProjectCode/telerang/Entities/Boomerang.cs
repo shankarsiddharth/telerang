@@ -52,6 +52,7 @@ namespace telerang
         private TiledMapTileLayer _tiledMapPlatformLayer;
         private TiledMapObjectLayer _tiledMapPlatformObjectLayer;
         private TiledMapObjectLayer _tiledMapFlyingCarObjectLayer;
+        private TiledMapImageLayer _tiledMapMaskLayer;
         private TiledMapTile? _tile = null;
         private EntityManager _entityManager;
 
@@ -80,6 +81,7 @@ namespace telerang
             _tiledMapPlatformLayer = _tiledMap.GetLayer<TiledMapTileLayer>("Platforms");
             _tiledMapPlatformObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("Platform");
             _tiledMapFlyingCarObjectLayer = _tiledMap.GetLayer<TiledMapObjectLayer>("MovingPlatform");
+            _tiledMapMaskLayer = _tiledMap.GetLayer<TiledMapImageLayer>("Mask");
 
             float width = SpriteTexture.Width;
             float height = SpriteTexture.Height;
@@ -99,6 +101,15 @@ namespace telerang
             MouseState mouseState = Mouse.GetState();
             Vector2 ninjaPosition = _ninja.Position;
             Vector2 mousePosition = new Vector2(mouseState.X, mouseState.Y);
+
+            if (_ninja.State == NinjaState.Aiming)
+            {
+                ShowMask();
+            }
+            else
+            {
+                HideMask();
+            }
 
             switch (_ninja.State)
             {
@@ -394,7 +405,7 @@ namespace telerang
                 if (CheckAbyss())
                 //if (IsAbyss(x, y))
                 {
-                    Console.WriteLine("Dead");
+                    //Console.WriteLine("Dead");
                     SoundEffects[2].Play();
                     _ninja.sprite.Play("fall", () =>
                     {
@@ -408,7 +419,7 @@ namespace telerang
                     _ninja.sprite.Play("teleportEnd", () =>
                     {
 
-                        Console.WriteLine("Still Alive");
+                        //Console.WriteLine("Still Alive");
                         _ninja.ChangeState(NinjaState.Idle);
                         IfOnPlatformMoveNinja();
                     });
@@ -419,7 +430,7 @@ namespace telerang
         public void DrawPrimitives(PrimitiveDrawing primitiveDrawing, GameTime gameTime)
         {
 
-            List<TiledMapObject> objects = new List<TiledMapObject>();
+           /* List<TiledMapObject> objects = new List<TiledMapObject>();
 
             TiledMapObject[] platformObjects = _tiledMapPlatformObjectLayer.Objects;
             TiledMapObject[] flyingCarObjects = _tiledMapFlyingCarObjectLayer.Objects;
@@ -436,7 +447,7 @@ namespace telerang
             {
                 RectangleF boundingBox = new RectangleF(objects[i].Position, objects[i].Size);
                 //primitiveDrawing.DrawRectangle(new Vector2(boundingBox.X, boundingBox.Y), boundingBox.Width, boundingBox.Height, Color.Green);
-            }
+            }*/
 
             switch (_ninja.State)
             {
@@ -645,7 +656,7 @@ namespace telerang
         public void OnCollision(CollisionEventArgs collisionInfo)
         {
             //throw new NotImplementedException();
-            Console.WriteLine(collisionInfo.Other.GetType().Name);
+            //Console.WriteLine(collisionInfo.Other.GetType().Name);
             if (collisionInfo.Other.GetType().Name == "Obstacle") {
                 SoundEffects[0].Play();
                 _ninja.ChangeState(NinjaState.Idle);
@@ -668,6 +679,16 @@ namespace telerang
             float b_coord = Vector2.Dot(VectorA, VectorB);
             float p_coord = Vector2.Dot(VectorA, p);
             return Math.Atan2(p_coord, b_coord);
+        }
+
+        private void ShowMask()
+        {
+            _tiledMapMaskLayer.IsVisible = true;
+        }
+
+        private void HideMask()
+        {
+            _tiledMapMaskLayer.IsVisible = false;
         }
     }
 }

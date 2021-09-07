@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="64" tileheight="64" infinite="0" nextlayerid="8" nextobjectid="17">
+ <imagelayer id="2" name="BG">
+  <image source="Levels/map2_end.png" width="960" height="960"/>
+ </imagelayer>
+ <imagelayer id="3" name="Mask" visible="0">
+  <image source="Levels/map2_mask.png" width="960" height="960"/>
+ </imagelayer>
+ <objectgroup id="4" name="Platform">
+  <object id="9" x="378.5" y="0.5" width="195.5" height="62.5"/>
+  <object id="10" x="379" y="875" width="197" height="84.5"/>
+ </objectgroup>
+ <objectgroup id="5" name="Obstacle">
+  <object id="11" x="750" y="416" width="94.6667" height="98.6667"/>
+  <object id="12" x="495" y="416" width="94.6667" height="98.6667"/>
+  <object id="13" x="240" y="416" width="94.6667" height="98.6667"/>
+  <object id="14" x="497" y="677.333" width="94.6667" height="92"/>
+  <object id="15" x="753" y="677.333" width="94.6667" height="92"/>
+  <object id="16" x="240" y="677.333" width="94.6667" height="92"/>
+ </objectgroup>
+ <objectgroup id="6" name="MovingPlatform">
+  <object id="6" x="98" y="159" width="202.667" height="142.667"/>
+  <object id="1" x="700" y="159" width="202.667" height="142.667"/>
+  <object id="7" x="540" y="525" width="202.667" height="142.667"/>
+  <object id="8" x="250" y="525" width="202.667" height="142.667"/>
+  <object id="2" x="398" y="159" width="202.667" height="142.667"/>
+ </objectgroup>
+</map>
