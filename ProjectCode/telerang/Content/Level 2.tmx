@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="64" tileheight="64" infinite="0" nextlayerid="16" nextobjectid="24">
+<map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="15" height="15" tilewidth="64" tileheight="64" infinite="0" nextlayerid="17" nextobjectid="24">
  <tileset firstgid="1" source="tilesheet_complete.tsx"/>
  <imagelayer id="6" name="Image Layer 1">
   <image source="Levels/map2_end.png" width="960" height="960"/>
+ </imagelayer>
+ <imagelayer id="16" name="Mask">
+  <image source="Levels/map2_mask.png" width="960" height="960"/>
  </imagelayer>
  <imagelayer id="13" name="Car 5" offsetx="629.333" offsety="114.667">
   <image source="flyingcar.png" width="256" height="189"/>
