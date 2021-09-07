@@ -12,6 +12,8 @@ namespace telerang.Entities
 {
     public class MovingPlatform : IGameEntity
     {
+        public event EventHandler<TeleRangEventArgs> OnMovingPlatformSwitchedSides;
+
         public int DrawOrder { get; set; }
 
         public Vector2 Position { get; private set; }
@@ -33,6 +35,8 @@ namespace telerang.Entities
         public float Speed { get; set; }
 
         private Vector2 _startPosition { get; set; }
+
+        private bool IsSideSwitched { get; set; }
 
         public MovingPlatform(TiledMapObject mapObject, Texture2D spriteSheetTexture, float WindowWidth)
         {
@@ -89,8 +93,16 @@ namespace telerang.Entities
                 {
                     //Position = new Vector2(_startPosition.X + _WindowWidth, Position.Y);
                     Position = new Vector2(_WindowWidth + MapObject.Size.Width, Position.Y);
+                    IsSideSwitched = true;
                 }
                 Bounds.Position = Position;
+                if(IsSideSwitched)
+                {
+                    IsSideSwitched = false;
+                    TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                    teleRangEventArgs.position = Position;
+                    OnMovingPlatformSwitchedSides?.Invoke(this, teleRangEventArgs);                    
+                }
             }
             else if(Direction.Equals("left"))
             {
@@ -101,8 +113,16 @@ namespace telerang.Entities
                 if (endPoint.X > _WindowWidth)
                 {
                     Position = new Vector2( (0 - MapObject.Size.Width),  Position.Y);
+                    IsSideSwitched = true;
                 }
                 Bounds.Position = Position;
+                if (IsSideSwitched)
+                {
+                    IsSideSwitched = false;
+                    TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                    teleRangEventArgs.position = Position;
+                    OnMovingPlatformSwitchedSides?.Invoke(this, teleRangEventArgs);
+                }
             }
             
         }

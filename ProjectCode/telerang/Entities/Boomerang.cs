@@ -66,6 +66,9 @@ namespace telerang
         private float _angularVelocity = 3.0f;
         private float _anglePassed = 0;
 
+        private bool _isNinjaOnTheMovingPlatform { get; set; }
+        private MovingPlatform _ninjaMovingPlatform;
+
         public Boomerang(Texture2D spriteTexture,List<SoundEffect> soundEffects, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap, EntityManager entityManager)
         {
             SpriteTexture = spriteTexture;
@@ -87,6 +90,8 @@ namespace telerang
             float height = SpriteTexture.Height;
             float maxBound = (width >= height) ? width : height;
             Bounds = new CircleF(new Vector2(Position.X - (width/2.0f), Position.Y - (height/2.0f)), maxBound);
+
+            _ninjaMovingPlatform = null;
         }
 
         public int DrawOrder { get; set; }
@@ -115,7 +120,8 @@ namespace telerang
             {
                 case NinjaState.Idle:
                     {
-                        IfOnPlatformMoveNinja();
+                        IfOnMovingPlatformThenMoveNinja();
+                        IfOnWinPlatformThenEndGame();
 
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
@@ -131,7 +137,8 @@ namespace telerang
                 case NinjaState.Aiming:
                     {
 
-                        IfOnPlatformMoveNinja();
+                        IfOnMovingPlatformThenMoveNinja();
+                        IfOnWinPlatformThenEndGame();
 
                         if (mousePosition.Y <= ninjaPosition.Y)
                         {
@@ -210,15 +217,52 @@ namespace telerang
 
                     }
                     break;
+
+                case NinjaState.Win:
+                    break;
             }
         }
 
-        private void IfOnPlatformMoveNinja()
+        internal void RegisterEvents(ref List<MovingPlatform> movingPlatform)
+        {
+            for(int i = 0; i < movingPlatform.Count; i++)
+            {
+                movingPlatform[i].OnMovingPlatformSwitchedSides += OnMovingPlatformSideSwitched;
+            }
+        }
+
+        private void IfOnMovingPlatformThenMoveNinja()
         {
             MovingPlatform CurrentMovingPlatform = GetCurrentMovingPlatform();            
             if (CurrentMovingPlatform != null)
             {
-                _ninja.Position = CurrentMovingPlatform.Position;
+                RectangleF rectangleF = (RectangleF)CurrentMovingPlatform.Bounds;
+                Vector2 newPosition = new Vector2(CurrentMovingPlatform.Position.X + (rectangleF.Width / 2.0f), CurrentMovingPlatform.Position.Y + (rectangleF.Height / 2.0f));
+                _ninja.Position = newPosition;                
+                _isNinjaOnTheMovingPlatform = true;
+                _ninjaMovingPlatform = CurrentMovingPlatform;
+            }
+            else
+            {
+                _isNinjaOnTheMovingPlatform = false;
+                _ninjaMovingPlatform = null;
+            }
+        }
+
+        private void IfOnWinPlatformThenEndGame()
+        {
+            Platform currentPlatform = GetCurrentPlatform();
+            if (currentPlatform != null)
+            {
+                string isWin = null;
+                isWin = currentPlatform.MapObject.Properties.GetValueOrDefault<string, string>("iswin");
+                if (isWin != null)
+                {
+                    if (isWin.Equals("iswin"))
+                    {
+                        _ninja.ChangeState(NinjaState.Win);
+                    }
+                }
             }
         }
 
@@ -382,7 +426,7 @@ namespace telerang
                         _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2.0f), Position.Y - (SpriteTexture.Height / 2.0f));
                         spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
                         //Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
-                        spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
+                        //spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
                     break;
 
@@ -421,7 +465,8 @@ namespace telerang
 
                         //Console.WriteLine("Still Alive");
                         _ninja.ChangeState(NinjaState.Idle);
-                        IfOnPlatformMoveNinja();
+                        IfOnMovingPlatformThenMoveNinja();
+                        IfOnWinPlatformThenEndGame();
                     });
                 }
             });
@@ -524,6 +569,21 @@ namespace telerang
                 }
             }
             return movingPlatform;
+        }
+
+        private Platform GetCurrentPlatform()
+        {
+            Platform platform = null;
+            List<Platform> objects = _entityManager.GetEntitiesOfType<Platform>().ToList();
+            for (int i = 0; i < objects.Count; i++)
+            {
+                RectangleF boundingBox = (RectangleF)objects[i].Bounds;
+                if (boundingBox.Contains(_ninja.Position))
+                {
+                    return objects[i];
+                }
+            }
+            return platform;
         }
 
         private bool IsAbyss(ushort x, ushort y)
@@ -689,6 +749,20 @@ namespace telerang
         private void HideMask()
         {
             _tiledMapMaskLayer.IsVisible = false;
+        }
+
+        public void OnMovingPlatformSideSwitched(object sender, TeleRangEventArgs teleRangEventArgs)
+        {
+            if(_isNinjaOnTheMovingPlatform)
+            {
+                MovingPlatform movingPlatform = (MovingPlatform)sender;
+                if(_ninjaMovingPlatform == movingPlatform)
+                {
+                    RectangleF rectangleF = (RectangleF)movingPlatform.Bounds;
+                    Vector2 newPosition = new Vector2(movingPlatform.Position.X + (rectangleF.Width / 2.0f), movingPlatform.Position.Y + (rectangleF.Height / 2.0f));
+                    _ninja.Position = newPosition;
+                }
+            }
         }
     }
 }

@@ -5,6 +5,7 @@
         Idle,
         Aiming,
         Teleporting,
-        Teleported
+        Teleported,
+        Win
     }
 }

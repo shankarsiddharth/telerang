@@ -29,8 +29,8 @@ namespace telerang
 
         public const string GAME_TITLE = "TeleRang";
 
-        private const string TILEMAP_NAME = "Level 1.2";
-        //private const string TILEMAP_NAME = "level2";
+        //private const string TILEMAP_NAME = "Level 1.2";
+        private const string TILEMAP_NAME = "level2";
         private const string NINJA_SPRITESHEET = "Animation/Ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
@@ -81,7 +81,11 @@ namespace telerang
 
         private VisualEntityManager _visualEntityManager;
         // === Particle end ===
-         
+
+        private List<Platform> _platforms;
+        private List<Obstacle> _obstacles;
+        private List<MovingPlatform> _movingPlatforms;
+
 
         public TeleRangGame()
         {
@@ -167,12 +171,12 @@ namespace telerang
 
             _highlightTexture = new Texture2D(GraphicsDevice, 1, 1);
 
-            _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME, visualEntityManager: _visualEntityManager, highlightParticleTexture: _highlightTexture, boomerang:_boomerang);
-            _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
+            _platforms = _entityFactory.CreatePlatforms(Content, _collisionComponent, _entityManager, TILEMAP_NAME, PLATFORM_LAYER_NAME, visualEntityManager: _visualEntityManager, highlightParticleTexture: _highlightTexture, boomerang:_boomerang);
+            _obstacles = _entityFactory.CreateObstacles(Content, _collisionComponent, _entityManager, TILEMAP_NAME, OBSTACLES_LAYER_NAME);
             _spriteSheetTexture = Content.Load<Texture2D>(FLYING_CAR_SPRITESHEET);
-            _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,
+            _movingPlatforms = _entityFactory.CreateMovingPlatforms(Content, _collisionComponent, _entityManager,
                 _spriteSheetTexture, TILEMAP_NAME, MOVING_PLATFORM_LAYER_NAME, WINDOW_WIDTH,
-                2);
+                1f);
             // === Particle ===
             _boomerangTrailTexture = new Texture2D(GraphicsDevice, 1, 1);
             _boomerangTrail = new BoomerangTrail(_boomerangTrailTexture, _boomerang);
@@ -184,6 +188,8 @@ namespace telerang
 
             // TODO: add visual entity factory for moving platform
             // === Particle end ===
+
+            _boomerang.RegisterEvents(ref _movingPlatforms);
         }
 
         protected override void Update(GameTime gameTime)

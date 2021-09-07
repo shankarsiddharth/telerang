@@ -82,7 +82,7 @@ namespace telerang.Entities
             _spritePosition = new Vector2(Position.X /*- (SpriteTexture.Width / 2)*/, Position.Y - (SpriteTexture.Height / 2));
             spriteBatch.Draw(sprite, _spritePosition);
 
-            spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
+            //spriteBatch.DrawRectangle((RectangleF)Bounds, Color.Red);
         }
 
         public void Update(GameTime gameTime)
@@ -128,6 +128,11 @@ namespace telerang.Entities
                             {
                                 ReSpawn();
                             }
+                    }
+                    break;
+                case NinjaState.Win:
+                    {
+                        PlayAnim("idle", true);
                     }
                     break;
             }            

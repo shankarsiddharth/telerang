@@ -13,7 +13,11 @@
   <object id="5" x="510" y="255" width="193" height="122"/>
   <object id="6" x="224" y="568" width="158.667" height="136"/>
   <object id="7" x="604.5" y="574.5" width="164.5" height="146.5"/>
-  <object id="10" x="291" y="827" width="283" height="122"/>
+  <object id="10" x="291" y="827" width="283" height="122">
+   <properties>
+    <property name="iswin" value="iswin"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="7" name="Obstacle"/>
  <objectgroup id="6" name="MovingPlatform">
