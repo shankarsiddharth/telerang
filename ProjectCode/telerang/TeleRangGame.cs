@@ -16,6 +16,7 @@ using MonoGame.Extended.Screens.Transitions;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
+using MonoGame.Extended.BitmapFonts;
 
 namespace telerang
 {
@@ -66,6 +67,7 @@ namespace telerang
         private Texture2D _spriteSheetTexture;
         private List<SoundEffect> _soundEffects;
         private Song _bgm;
+        private BitmapFont _bitmapFont;
 
         private readonly CollisionComponent _collisionComponent;
         private readonly ScreenManager _screenManager;
@@ -129,6 +131,8 @@ namespace telerang
             };
 
             _spriteSheetTexture = Content.Load<Texture2D>(BOOMERANG_SPRITESHEET);
+
+            _bitmapFont = Content.Load<BitmapFont>("UIFonts");
 
             _soundEffects = new List<SoundEffect>();
             _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Hits_Obstacle_Sound"));
@@ -207,6 +211,7 @@ namespace telerang
 
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
+            //_spriteBatch.DrawString(_bitmapFont, "YOU WIN !", new Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), Color.PeachPuff);
             // === Particle ===
             _visualEntityManager.Draw(_spriteBatch, gameTime);
             // === Particle end ===
