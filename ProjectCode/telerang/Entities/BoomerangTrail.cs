@@ -135,8 +135,8 @@ namespace telerang.Entities
                                 {
                                     new ColorInterpolator
                                     {
-                                        StartValue = new HslColor(0.33f, 0.5f, 0.5f),
-                                        EndValue = new HslColor(0.5f, 0.9f, 1.0f)
+                                        StartValue = HslColor.FromRgb(Color.White),
+                                        EndValue = HslColor.FromRgb(Color.Transparent)
                                     }
                                 }
                             },
