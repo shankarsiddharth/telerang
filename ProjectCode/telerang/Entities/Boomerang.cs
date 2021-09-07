@@ -20,6 +20,7 @@ namespace telerang
         public event EventHandler<TeleRangEventArgs> OnBoomerangRelease;
         public event EventHandler<TeleRangEventArgs> OnBoomerangCatch;
         public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
+        public event EventHandler<TeleRangEventArgs> OnBoomerangAim;
 
         public Vector2 Position { get; set; }
         public float MaxTime { get; set; }
@@ -48,6 +49,9 @@ namespace telerang
         private float _distanceTreshold = 0.01f;
 
         private Vector2 _spritePosition;
+        private float _angle = 0;
+        private float _angularVelocity = 3.0f;
+        private float _anglePassed = 0;
 
         public Boomerang(Texture2D spriteTexture, Vector2 initialPosition, Texture2D cursor, Ninja ninja, float maximumDistance, TiledMap tiledMap)
         {
@@ -95,6 +99,10 @@ namespace telerang
 
                         if (mouseState.LeftButton == ButtonState.Pressed)
                         {
+                            TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                            teleRangEventArgs.position = Position;
+                            OnBoomerangAim?.Invoke(this, teleRangEventArgs);
+
                             _ninja.ChangeState(NinjaState.Aiming);
                         }
                     }
@@ -141,17 +149,23 @@ namespace telerang
 
                             float distance = Vector2.Distance(_ninja.Position, _cursorPosition);
                             Vector2 midpoint = (_ninja.Position + _cursorPosition) / 2.0f;
-                           
-                            /* _pathToTravel = CreateCircle(midpoint, distance / 2.0f);
+                            float radius = distance / 2;
+                            _pathToTravel = CreateCircle(midpoint, distance / 2.0f);
                             _currentPathIndex = 0;
-                            _ninja.ChangeState(NinjaState.Teleporting);*/
+
+                            Vector2 A = Vector2.UnitX*radius;//(new Vector2(WindowWidth, 0)) - _ninja.Position;
+                            Vector2 B = _ninja.Position-midpoint;
+                            _angle = (float)GetAngle(B, A);
+                            _anglePassed = 0f;
+
+                            _ninja.ChangeState(NinjaState.Teleporting);
 
                             //_ninja.Position = mousePosition;
                             //TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             //teleRangEventArgs.position = Position;
                             //OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
 
-                            Vector2 A = (new Vector2(WindowWidth, 0)) - _ninja.Position;
+                           /* Vector2 A = (new Vector2(WindowWidth, 0)) - _ninja.Position;
                             Vector2 B = _cursorPosition - _ninja.Position;
                             double angle = GetAngle(B, A);
                             float ry = distance / 2.0f;
@@ -161,15 +175,15 @@ namespace telerang
                             TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
                             teleRangEventArgs.position = Position;
                             OnBoomerangRelease?.Invoke(this, teleRangEventArgs);
-                            _ninja.ChangeState(NinjaState.Teleporting);
+                            _ninja.ChangeState(NinjaState.Teleporting);*/
                         }
                     }
                     break;
 
                 case NinjaState.Teleporting:
                     {
-                        MoveInLine(gameTime, mouseState);
-                        //MoveInCircle(deltaTime);
+                        //MoveInLine(gameTime, mouseState);
+                        MoveInCircle(gameTime, mouseState);
                         CollisionComponentSimple.Update(gameTime);
                     }
                     break;
@@ -223,17 +237,99 @@ namespace telerang
             _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
         }
 
-        private void MoveInCircle(double deltaTime)
+        private void MoveInCircle(GameTime gameTime, MouseState mouseState)
         {
-            Vector2 currentPosition = _pathToTravel[_currentPathIndex];
-            Vector2 nextPositionInPath = _pathToTravel[(_currentPathIndex + 1) % _pathToTravel.Length];
-            Vector2 differceInPosition = (nextPositionInPath - currentPosition);
-            differceInPosition.Normalize();
-            Position = differceInPosition * (float)deltaTime * Speed;
-            if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
+            float distance = Vector2.Distance(_ninja.Position, _cursorPosition);
+            float radius = distance / 2.0f;
+            Vector2 midpoint = (_ninja.Position + _cursorPosition) / 2.0f;
+            if (_anglePassed >= 2 * MathF.PI)
             {
-                _currentPathIndex += 1;
+                _ninja.Position = _startPosition;
+                Position = _startPosition;
+                _anglePassed = 0f;
+                TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                teleRangEventArgs.position = Position;
+                OnBoomerangCatch?.Invoke(this, teleRangEventArgs);
+                _ninja.ChangeState(NinjaState.Idle);
             }
+            else {
+                float delta= (float)(gameTime.ElapsedGameTime.TotalSeconds * _angularVelocity);
+                _angle += delta;
+                _anglePassed += delta;
+                var displacedPosition = midpoint + new Vector2(radius * (float)Math.Cos(_angle), radius * (float)Math.Sin(_angle));
+                Position = displacedPosition;
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    _ninja.ChangeState(NinjaState.Teleported);
+                    TeleportNinja();
+                }
+            }
+            
+
+            /* Vector2 currentPosition = _pathToTravel[_currentPathIndex];
+             _startPosition = currentPosition;
+             Vector2 nextPositionInPath = _pathToTravel[(_currentPathIndex + 1) % _pathToTravel.Length];
+             _ninja.targetPosition = nextPositionInPath;
+             //Vector2 differceInPosition = (nextPositionInPath - currentPosition);
+             //differceInPosition.Normalize();
+
+
+             if (_timer <= MaxTime)
+             {
+                 //Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, _timer / MaxTime);
+                 Position = Vector2.LerpPrecise(currentPosition, nextPositionInPath, _timer / MaxTime);
+                 if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
+                 {
+                     _currentPathIndex += 1;
+                 }
+                 if (mouseState.LeftButton == ButtonState.Pressed
+                     && _timer > 2f * (float)gameTime.ElapsedGameTime.TotalMilliseconds)
+                 {
+                     _ninja.ChangeState(NinjaState.Teleported);
+                     TeleportNinja();
+                 }
+             }
+             else if (_timer >= 2 * MaxTime)
+             {
+                 _ninja.Position = _startPosition;
+                 Position = _startPosition;
+                 _timer = 0f;
+
+                 TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                 teleRangEventArgs.position = Position;
+                 OnBoomerangCatch?.Invoke(this, teleRangEventArgs);
+
+                 _ninja.ChangeState(NinjaState.Idle);
+             }
+             else
+             {
+                 //Position = Vector2.LerpPrecise(_startPosition, _ninja.targetPosition, (2f - _timer / MaxTime));
+                 Position = Vector2.LerpPrecise(currentPosition, nextPositionInPath, (2f - _timer / MaxTime));
+                 if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
+                 {
+                     _currentPathIndex += 1;
+                 }
+                 if (mouseState.LeftButton == ButtonState.Pressed)
+                 {
+                     _ninja.ChangeState(NinjaState.Teleported);
+                     TeleportNinja();
+                 }
+             }
+             float width = SpriteTexture.Width;
+             float height = SpriteTexture.Height;
+             Bounds.Position = new Vector2(Position.X + (width / 2.0f), Position.Y + (height / 2.0f));
+
+             _timer += (float)gameTime.ElapsedGameTime.TotalMilliseconds;
+
+             *//*Vector2 currentPosition = _pathToTravel[_currentPathIndex];
+             Vector2 nextPositionInPath = _pathToTravel[(_currentPathIndex + 1) % _pathToTravel.Length];
+             Vector2 differceInPosition = (nextPositionInPath - currentPosition);
+             differceInPosition.Normalize();
+             Position = differceInPosition * (float)deltaTime * Speed;
+             if (Vector2.DistanceSquared(Position, nextPositionInPath) < _distanceTreshold)
+             {
+                 _currentPathIndex += 1;
+             }*/
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -492,8 +588,11 @@ namespace telerang
 
 
         private double GetAngle(Vector2 VectorA, Vector2 VectorB)
-        {            
-            return Math.Atan2(VectorB.Y - VectorA.Y, VectorB.X - VectorB.Y);
+        {
+            Vector2 p = new Vector2(-VectorB.Y, VectorB.X);
+            float b_coord = Vector2.Dot(VectorA, VectorB);
+            float p_coord = Vector2.Dot(VectorA, p);
+            return Math.Atan2(p_coord, b_coord);
         }
     }
 }
