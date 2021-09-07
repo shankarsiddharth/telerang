@@ -23,7 +23,15 @@ namespace telerang
         public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
         public event EventHandler<TeleRangEventArgs> OnBoomerangAim;
 
-        public Vector2 Position { get; set; }
+        private Vector2 position;
+        public Vector2 Position { 
+            get {return position; } 
+            set {
+                position = value;
+                if(Bounds!=null)Bounds.Position=value;
+            } 
+        }
+        
         public float MaxTime { get; set; }
         public int TileWidth;
         public int TileHeight;
@@ -360,7 +368,7 @@ namespace telerang
                         _spritePosition = new Vector2(Position.X - (SpriteTexture.Width / 2.0f), Position.Y - (SpriteTexture.Height / 2.0f));
                         spriteBatch.Draw(SpriteTexture, _spritePosition, Color.White);
                         //Primitives2D.DrawPoints(spriteBatch, _pathToTravel, Color.Black, 1.0f);
-                        //spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
+                        spriteBatch.DrawCircle((CircleF)Bounds, 16, Color.Red);
                     }
                     break;
 
@@ -628,6 +636,13 @@ namespace telerang
         {
             //throw new NotImplementedException();
             Console.WriteLine(collisionInfo.Other.GetType().Name);
+            if (collisionInfo.Other.GetType().Name == "Obstacle") {
+                _ninja.ChangeState(NinjaState.Idle);
+                Position = _startPosition;
+                TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                teleRangEventArgs.position = Position;
+                OnBoomerangTeleport?.Invoke(this, teleRangEventArgs);
+            }
            /* if (collisionInfo.Other.GetType().Name != "Platform")
             {
                 _ninja.IsAlive = false;
