@@ -153,7 +153,10 @@ namespace telerang.Entities
 
         private void Disable()
         {
-            _particleEffect.Emitters[0].AutoTrigger = false;
+            if(_particleEffect != null)
+            {
+                _particleEffect.Emitters[0].AutoTrigger = false;               
+            }
             _disableTimer.Start();
             _state = State.PendingToDisable;
         }
