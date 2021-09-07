@@ -87,6 +87,7 @@ namespace telerang
         private List<Obstacle> _obstacles;
         private List<MovingPlatform> _movingPlatforms;
         private bool _shouldDrawWin;
+        private int colorIndex=178;
 
         public TeleRangGame()
         {
@@ -225,10 +226,12 @@ namespace telerang
 
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
-            
+
             if(_shouldDrawWin)
             {
-                _spriteBatch.DrawString(_bitmapFont, "YOU WIN !", new Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) - new Vector2(210, 64), Color.PeachPuff);
+                colorIndex+=2;
+                colorIndex %= 360;
+                _spriteBatch.DrawString(_bitmapFont, "TELE-RANG!", new Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) - new Vector2(210, 64), ColorHelper.FromHsl((float)colorIndex/360f,0.7525f,0.798f));
             }
             
             // === Particle ===
