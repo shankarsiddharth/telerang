@@ -15,6 +15,7 @@ using telerang.Screens;
 using MonoGame.Extended.Screens.Transitions;
 using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Media;
 
 namespace telerang
 {
@@ -64,6 +65,7 @@ namespace telerang
 
         private Texture2D _spriteSheetTexture;
         private List<SoundEffect> _soundEffects;
+        private Song _bgm;
 
         private readonly CollisionComponent _collisionComponent;
         private readonly ScreenManager _screenManager;
@@ -131,6 +133,12 @@ namespace telerang
             _soundEffects.Add(Content.Load<SoundEffect>("Audio/Boomerang_Throw_Sound"));
             _soundEffects.Add(Content.Load<SoundEffect>("Audio/Player_Falls"));
             _soundEffects.Add(Content.Load<SoundEffect>("Audio/Quick_Teleport_Sound_new"));
+
+            _bgm=Content.Load<Song>("Audio/ClubBeat_14_V3");
+            MediaPlayer.IsRepeating = true;
+            MediaPlayer.Volume = 0.5f;
+            MediaPlayer.Play(_bgm);
+
             _boomerang = new Boomerang(_spriteSheetTexture,_soundEffects, _ninja.Position, Content.Load<Texture2D>(CURSOR_SPRITESHEET), _ninja, MAXIMUM_DISTANCE, _tiledMap, _entityManager)
             {
                 DrawOrder = 101,  
