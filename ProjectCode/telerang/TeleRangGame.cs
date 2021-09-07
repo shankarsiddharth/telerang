@@ -19,13 +19,13 @@ namespace telerang
     public class TeleRangGame : Game
     {
         //Public
-        public const int WINDOW_WIDTH = 1024;
+        public const int WINDOW_WIDTH = 960;
 
-        public const int WINDOW_HEIGHT = 1024;
+        public const int WINDOW_HEIGHT = 960;
 
         public const string GAME_TITLE = "TeleRang";
 
-        private const string TILEMAP_NAME = "untitled";
+        private const string TILEMAP_NAME = "Level 1.2";
         private const string NINJA_SPRITESHEET = "Animation/Ninja";
         private const string BOOMERANG_SPRITESHEET = "boomerang";
         private const string CURSOR_SPRITESHEET = "cursor_hand";
