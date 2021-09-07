@@ -26,6 +26,36 @@
 /processorParam:TextureFormat=Color
 /build:Animation/Ninja.png
 
+#begin Audio/Boomerang_Hits_Obstacle_Sound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Boomerang_Hits_Obstacle_Sound.wav
+
+#begin Audio/Boomerang_Throw_Sound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Boomerang_Throw_Sound.wav
+
+#begin Audio/ClubBeat_14_V3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Audio/ClubBeat_14_V3.mp3
+
+#begin Audio/Player_Falls.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Player_Falls.wav
+
+#begin Audio/Quick_Teleport_Sound_new.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Audio/Quick_Teleport_Sound_new.wav
+
 #begin boomerang.png
 /importer:TextureImporter
 /processor:TextureProcessor
