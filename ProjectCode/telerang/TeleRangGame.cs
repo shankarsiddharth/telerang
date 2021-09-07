@@ -17,6 +17,7 @@ using Microsoft.Xna.Framework.Audio;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework.Media;
 using MonoGame.Extended.BitmapFonts;
+using System;
 
 namespace telerang
 {
@@ -85,10 +86,11 @@ namespace telerang
         private List<Platform> _platforms;
         private List<Obstacle> _obstacles;
         private List<MovingPlatform> _movingPlatforms;
-
+        private bool _shouldDrawWin;
 
         public TeleRangGame()
         {
+            _shouldDrawWin = false;
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _entityManager = new EntityManager();
@@ -190,6 +192,12 @@ namespace telerang
             // === Particle end ===
 
             _boomerang.RegisterEvents(ref _movingPlatforms);
+            _boomerang.OnNinjaWin += OnNinjaWin;
+        }
+
+        private void OnNinjaWin(object sender, TeleRangEventArgs e)
+        {
+            _shouldDrawWin = true;
         }
 
         protected override void Update(GameTime gameTime)
@@ -217,7 +225,12 @@ namespace telerang
 
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
-            //_spriteBatch.DrawString(_bitmapFont, "YOU WIN !", new Vector2(WINDOW_WIDTH/2, WINDOW_HEIGHT/2), Color.PeachPuff);
+            
+            if(_shouldDrawWin)
+            {
+                _spriteBatch.DrawString(_bitmapFont, "YOU WIN !", new Vector2(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) - new Vector2(210, 64), Color.PeachPuff);
+            }
+            
             // === Particle ===
             _visualEntityManager.Draw(_spriteBatch, gameTime);
             // === Particle end ===

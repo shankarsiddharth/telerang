@@ -25,6 +25,8 @@ namespace telerang
         public event EventHandler<TeleRangEventArgs> OnBoomerangTeleport;
         public event EventHandler<TeleRangEventArgs> OnBoomerangAim;
 
+        public event EventHandler<TeleRangEventArgs> OnNinjaWin;
+
         private Vector2 position;
         public Vector2 Position { 
             get {return position; } 
@@ -219,6 +221,13 @@ namespace telerang
                     break;
 
                 case NinjaState.Win:
+                    {
+                        TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                        teleRangEventArgs.position = Position;
+                        OnBoomerangAim?.Invoke(this, teleRangEventArgs);
+
+                        ShowMask();
+                    }
                     break;
             }
         }
@@ -260,6 +269,16 @@ namespace telerang
                 {
                     if (isWin.Equals("iswin"))
                     {
+                        TeleRangEventArgs teleRangEventArgs = new TeleRangEventArgs();
+                        teleRangEventArgs.position = Position;
+                        OnBoomerangAim?.Invoke(this, teleRangEventArgs);
+
+                        teleRangEventArgs = new TeleRangEventArgs();
+                        teleRangEventArgs.position = Position;
+                        OnNinjaWin?.Invoke(this, teleRangEventArgs);
+
+                        ShowMask();
+
                         _ninja.ChangeState(NinjaState.Win);
                     }
                 }
